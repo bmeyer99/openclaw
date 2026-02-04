@@ -49,6 +49,22 @@ export type AudioConfig = {
   };
 };
 
+/**
+ * Emoji reactions to emit at each stage of message processing.
+ * Provides visual feedback for message lifecycle state.
+ * Each stage replaces the previous reaction (if configured).
+ */
+export type LifecycleReactionsConfig = {
+  /** Emoji when message is received (default: uses ackReaction if set). */
+  received?: string;
+  /** Emoji when message is queued waiting for processing. */
+  queued?: string;
+  /** Emoji when model is actively processing. */
+  processing?: string;
+  /** Emoji when response is complete (your turn). */
+  complete?: string;
+};
+
 export type MessagesConfig = {
   /** @deprecated Use `whatsapp.messagePrefix` (WhatsApp-only inbound prefix). */
   messagePrefix?: string;
@@ -82,6 +98,11 @@ export type MessagesConfig = {
   ackReactionScope?: "group-mentions" | "group-all" | "direct" | "all";
   /** Remove ack reaction after reply is sent (default: false). */
   removeAckAfterReply?: boolean;
+  /**
+   * Lifecycle reactions for message processing stages.
+   * When enabled, replaces the simple ackReaction with stage-aware reactions.
+   */
+  lifecycleReactions?: LifecycleReactionsConfig;
   /** Text-to-speech settings for outbound replies. */
   tts?: TtsConfig;
 };

@@ -126,6 +126,9 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
     onIdle: typingCallbacks.onIdle,
   });
 
+  // Transition to "processing" stage when model starts
+  void prepared.lifecycleManager?.processing();
+
   const { queuedFinal, counts } = await dispatchInboundMessage({
     ctx: prepared.ctxPayload,
     cfg,
@@ -163,29 +166,40 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
     );
   }
 
-  removeAckReactionAfterReply({
-    removeAfterReply: ctx.removeAckAfterReply,
-    ackReactionPromise: prepared.ackReactionPromise,
-    ackReactionValue: prepared.ackReactionValue,
-    remove: () =>
-      removeSlackReaction(
-        message.channel,
-        prepared.ackReactionMessageTs ?? "",
-        prepared.ackReactionValue,
-        {
-          token: ctx.botToken,
-          client: ctx.app.client,
-        },
-      ),
-    onError: (err) => {
-      logAckFailure({
-        log: logVerbose,
-        channel: "slack",
-        target: `${message.channel}/${message.ts}`,
-        error: err,
-      });
-    },
-  });
+  // Handle reaction cleanup after reply
+  if (prepared.lifecycleManager) {
+    // Transition to "complete" stage, then clear if removeAckAfterReply is set
+    void prepared.lifecycleManager.complete().then(() => {
+      if (ctx.removeAckAfterReply) {
+        void prepared.lifecycleManager?.clear();
+      }
+    });
+  } else {
+    // Legacy removeAckReactionAfterReply when no lifecycle manager
+    removeAckReactionAfterReply({
+      removeAfterReply: ctx.removeAckAfterReply,
+      ackReactionPromise: prepared.ackReactionPromise,
+      ackReactionValue: prepared.ackReactionValue,
+      remove: () =>
+        removeSlackReaction(
+          message.channel,
+          prepared.ackReactionMessageTs ?? "",
+          prepared.ackReactionValue,
+          {
+            token: ctx.botToken,
+            client: ctx.app.client,
+          },
+        ),
+      onError: (err) => {
+        logAckFailure({
+          log: logVerbose,
+          channel: "slack",
+          target: `${message.channel}/${message.ts}`,
+          error: err,
+        });
+      },
+    });
+  }
 
   if (prepared.isRoomish) {
     clearHistoryEntriesIfEnabled({

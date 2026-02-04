@@ -55,11 +55,11 @@ use `config.patch` or `openclaw config set`. Keep a backup of `~/.openclaw/openc
 
 Params:
 
-- `raw` (string) — JSON5 payload for the entire config
-- `baseHash` (optional) — config hash from `config.get` (required when a config already exists)
-- `sessionKey` (optional) — last active session key for the wake-up ping
-- `note` (optional) — note to include in the restart sentinel
-- `restartDelayMs` (optional) — delay before restart (default 2000)
+- `raw` (string) - JSON5 payload for the entire config
+- `baseHash` (optional) - config hash from `config.get` (required when a config already exists)
+- `sessionKey` (optional) - last active session key for the wake-up ping
+- `note` (optional) - note to include in the restart sentinel
+- `restartDelayMs` (optional) - delay before restart (default 2000)
 
 Example (via `gateway call`):
 
@@ -86,11 +86,11 @@ unrelated keys. It applies JSON merge patch semantics:
 
 Params:
 
-- `raw` (string) — JSON5 payload containing just the keys to change
-- `baseHash` (required) — config hash from `config.get`
-- `sessionKey` (optional) — last active session key for the wake-up ping
-- `note` (optional) — note to include in the restart sentinel
-- `restartDelayMs` (optional) — delay before restart (default 2000)
+- `raw` (string) - JSON5 payload containing just the keys to change
+- `baseHash` (required) - config hash from `config.get`
+- `sessionKey` (optional) - last active session key for the wake-up ping
+- `note` (optional) - note to include in the restart sentinel
+- `restartDelayMs` (optional) - delay before restart (default 2000)
 
 Example:
 
@@ -369,7 +369,7 @@ Legacy OAuth imports:
 
 The embedded Pi agent maintains a runtime cache at:
 
-- `<agentDir>/auth.json` (managed automatically; don’t edit manually)
+- `<agentDir>/auth.json` (managed automatically; don't edit manually)
 
 Legacy agent dir (pre multi-agent):
 
@@ -406,10 +406,10 @@ rotation order used for failover.
 
 Optional per-agent identity used for defaults and UX. This is written by the macOS onboarding assistant.
 
-If set, OpenClaw derives defaults (only when you haven’t set them explicitly):
+If set, OpenClaw derives defaults (only when you haven't set them explicitly):
 
-- `messages.ackReaction` from the **active agent**’s `identity.emoji` (falls back to 👀)
-- `agents.list[].groupChat.mentionPatterns` from the agent’s `identity.name`/`identity.emoji` (so “@Samantha” works in groups across Telegram/Slack/Discord/Google Chat/iMessage/WhatsApp)
+- `messages.ackReaction` from the **active agent**'s `identity.emoji` (falls back to 👀)
+- `agents.list[].groupChat.mentionPatterns` from the agent's `identity.name`/`identity.emoji` (so "@Samantha" works in groups across Telegram/Slack/Discord/Google Chat/iMessage/WhatsApp)
 - `identity.avatar` accepts a workspace-relative image path or a remote URL/data URL. Local files must live inside the agent workspace.
 
 `identity.avatar` accepts:
@@ -724,7 +724,7 @@ Notes:
 - `"open"`: groups bypass allowlists; mention-gating still applies.
 - `"disabled"`: block all group/room messages.
 - `"allowlist"`: only allow groups/rooms that match the configured allowlist.
-- `channels.defaults.groupPolicy` sets the default when a provider’s `groupPolicy` is unset.
+- `channels.defaults.groupPolicy` sets the default when a provider's `groupPolicy` is unset.
 - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams use `groupAllowFrom` (fallback: explicit `allowFrom`).
 - Discord/Slack use channel allowlists (`channels.discord.guilds.*.channels`, `channels.slack.channels`).
 - Group DMs (Discord/Slack) are still controlled by `dm.groupEnabled` + `dm.groupChannels`.
@@ -1014,7 +1014,7 @@ Notes:
 
 ### `web` (WhatsApp web channel runtime)
 
-WhatsApp runs through the gateway’s web channel (Baileys Web). It starts automatically when a linked session exists.
+WhatsApp runs through the gateway's web channel (Baileys Web). It starts automatically when a linked session exists.
 Set `web.enabled: false` to keep it off by default.
 
 ```json5
@@ -1228,7 +1228,7 @@ Notes:
 
 - Service account JSON can be inline (`serviceAccount`) or file-based (`serviceAccountFile`).
 - Env fallbacks for the default account: `GOOGLE_CHAT_SERVICE_ACCOUNT` or `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
-- `audienceType` + `audience` must match the Chat app’s webhook auth config.
+- `audienceType` + `audience` must match the Chat app's webhook auth config.
 - Use `spaces/<spaceId>` or `users/<userId|email>` when setting delivery targets.
 
 ### `channels.slack` (socket mode)
@@ -1440,7 +1440,7 @@ own per-scope workspaces under `agents.defaults.sandbox.workspaceRoot`.
 
 ### `agents.defaults.repoRoot`
 
-Optional repository root to show in the system prompt’s Runtime line. If unset, OpenClaw
+Optional repository root to show in the system prompt's Runtime line. If unset, OpenClaw
 tries to detect a `.git` directory by walking upward from the workspace (and current
 working directory). The path must exist to be used.
 
@@ -1478,7 +1478,7 @@ head/tail with a marker.
 
 ### `agents.defaults.userTimezone`
 
-Sets the user’s timezone for **system prompt context** (not for timestamps in
+Sets the user's timezone for **system prompt context** (not for timestamps in
 message envelopes). If unset, OpenClaw uses the host timezone at runtime.
 
 ```json5
@@ -1489,7 +1489,7 @@ message envelopes). If unset, OpenClaw uses the host timezone at runtime.
 
 ### `agents.defaults.timeFormat`
 
-Controls the **time format** shown in the system prompt’s Current Date & Time section.
+Controls the **time format** shown in the system prompt's Current Date & Time section.
 Default: `auto` (OS preference).
 
 ```json5
@@ -1574,7 +1574,7 @@ agent has `identity.name` set.
 
 `ackReaction` sends a best-effort emoji reaction to acknowledge inbound messages
 on channels that support reactions (Slack/Discord/Telegram/Google Chat). Defaults to the
-active agent’s `identity.emoji` when set, otherwise `"👀"`. Set it to `""` to disable.
+active agent's `identity.emoji` when set, otherwise `"👀"`. Set it to `""` to disable.
 
 `ackReactionScope` controls when reactions fire:
 
@@ -1583,8 +1583,41 @@ active agent’s `identity.emoji` when set, otherwise `"👀"`. Set it to `""` t
 - `direct`: direct messages only
 - `all`: all messages
 
-`removeAckAfterReply` removes the bot’s ack reaction after a reply is sent
+`removeAckAfterReply` removes the bot's ack reaction after a reply is sent
 (Slack/Discord/Telegram/Google Chat only). Default: `false`.
+
+#### `messages.lifecycleReactions`
+
+Stage-aware emoji reactions that provide visual feedback during message processing.
+When configured, replaces the simple `ackReaction` with reactions that change as the message
+progresses through processing stages.
+
+```json5
+{
+  messages: {
+    lifecycleReactions: {
+      received: "eyes", // Message received (replaces ackReaction when set)
+      queued: "clock1", // Reserved for queue state (not currently emitted)
+      processing: "gear", // Model is generating response
+      complete: "white_check_mark", // Response complete (your turn)
+    },
+  },
+}
+```
+
+Each stage is optional. When a stage has no emoji configured:
+
+- `received` falls back to `ackReaction` if set
+- Other stages simply don't emit a reaction
+
+The lifecycle manager automatically:
+
+- Swaps reactions as stages progress (removes old, adds new)
+- Handles errors gracefully (continues even if reactions fail)
+- Works with existing `ackReactionScope` gating
+- Honors `removeAckAfterReply` (clears reaction after complete)
+
+**Currently supported:** Slack (other channels coming soon)
 
 #### `messages.tts`
 
@@ -1634,8 +1667,8 @@ voice notes; other channels send MP3 audio.
 
 Notes:
 
-- `messages.tts.auto` controls auto‑TTS (`off`, `always`, `inbound`, `tagged`).
-- `/tts off|always|inbound|tagged` sets the per‑session auto mode (overrides config).
+- `messages.tts.auto` controls auto-TTS (`off`, `always`, `inbound`, `tagged`).
+- `/tts off|always|inbound|tagged` sets the per-session auto mode (overrides config).
 - `messages.tts.enabled` is legacy; doctor migrates it to `messages.tts.auto`.
 - `prefsPath` stores local overrides (provider/limit/summarize).
 - `maxTextLength` is a hard cap for TTS input; summaries are truncated to fit.
@@ -1651,7 +1684,7 @@ Notes:
 ### `talk`
 
 Defaults for Talk mode (macOS/iOS/Android). Voice IDs fall back to `ELEVENLABS_VOICE_ID` or `SAG_VOICE_ID` when unset.
-`apiKey` falls back to `ELEVENLABS_API_KEY` (or the gateway’s shell profile) when unset.
+`apiKey` falls back to `ELEVENLABS_API_KEY` (or the gateway's shell profile) when unset.
 `voiceAliases` lets Talk directives use friendly names (e.g. `"voice":"Clawd"`).
 
 ```json5
@@ -1681,7 +1714,7 @@ Each `agents.defaults.models` entry can include:
 - `alias` (optional model shortcut, e.g. `/opus`).
 - `params` (optional provider-specific API params passed through to the model request).
 
-`params` is also applied to streaming runs (embedded agent + compaction). Supported keys today: `temperature`, `maxTokens`. These merge with call-time options; caller-supplied values win. `temperature` is an advanced knob—leave unset unless you know the model’s defaults and need a change.
+`params` is also applied to streaming runs (embedded agent + compaction). Supported keys today: `temperature`, `maxTokens`. These merge with call-time options; caller-supplied values win. `temperature` is an advanced knob-leave unset unless you know the model's defaults and need a change.
 
 Example:
 
@@ -1851,7 +1884,7 @@ High level:
 - Modes:
   - `adaptive`: soft-trims oversized tool results (keep head/tail) when the estimated context ratio crosses `softTrimRatio`.
     Then hard-clears the oldest eligible tool results when the estimated context ratio crosses `hardClearRatio` **and**
-    there’s enough prunable tool-result bulk (`minPrunableToolChars`).
+    there's enough prunable tool-result bulk (`minPrunableToolChars`).
   - `aggressive`: always replaces eligible tool results before the cutoff with the `hardClear.placeholder` (no ratio checks).
 
 Soft vs hard pruning (what changes in the context sent to the LLM):
@@ -1866,8 +1899,8 @@ Soft vs hard pruning (what changes in the context sent to the LLM):
 Notes / current limitations:
 
 - Tool results containing **image blocks are skipped** (never trimmed/cleared) right now.
-- The estimated “context ratio” is based on **characters** (approximate), not exact tokens.
-- If the session doesn’t contain at least `keepLastAssistants` assistant messages yet, pruning is skipped.
+- The estimated "context ratio" is based on **characters** (approximate), not exact tokens.
+- If the session doesn't contain at least `keepLastAssistants` assistant messages yet, pruning is skipped.
 - In `aggressive` mode, `hardClear.enabled` is ignored (eligible tool results are always replaced with `hardClear.placeholder`).
 
 Default (adaptive):
@@ -1975,7 +2008,7 @@ Block streaming:
   Non-Telegram channels require an explicit `*.blockStreaming: true` to enable block replies.
 - `agents.defaults.blockStreamingBreak`: `"text_end"` or `"message_end"` (default: text_end).
 - `agents.defaults.blockStreamingChunk`: soft chunking for streamed blocks. Defaults to
-  800–1200 chars, prefers paragraph breaks (`\n\n`), then newlines, then sentences.
+  800-1200 chars, prefers paragraph breaks (`\n\n`), then newlines, then sentences.
   Example:
   ```json5
   {
@@ -1992,7 +2025,7 @@ Block streaming:
   `channels.googlechat.blockStreamingCoalesce`
   (and per-account variants).
 - `agents.defaults.humanDelay`: randomized pause between **block replies** after the first.
-  Modes: `off` (default), `natural` (800–2500ms), `custom` (use `minMs`/`maxMs`).
+  Modes: `off` (default), `natural` (800-2500ms), `custom` (use `minMs`/`maxMs`).
   Per-agent override: `agents.list[].humanDelay`.
   Example:
   ```json5
@@ -2053,7 +2086,7 @@ of `every`, keep `HEARTBEAT.md` tiny, and/or choose a cheaper `model`.
 
 - `tools.web.search.enabled` (default: true when key is present)
 - `tools.web.search.apiKey` (recommended: set via `openclaw configure --section web`, or use `BRAVE_API_KEY` env var)
-- `tools.web.search.maxResults` (1–10, default 5)
+- `tools.web.search.maxResults` (1-10, default 5)
 - `tools.web.search.timeoutSeconds` (default 30)
 - `tools.web.search.cacheTtlMinutes` (default 15)
 - `tools.web.fetch.enabled` (default true)
@@ -2129,7 +2162,7 @@ Example:
 
 `agents.defaults.subagents` configures sub-agent defaults:
 
-- `model`: default model for spawned sub-agents (string or `{ primary, fallbacks }`). If omitted, sub-agents inherit the caller’s model unless overridden per agent or per call.
+- `model`: default model for spawned sub-agents (string or `{ primary, fallbacks }`). If omitted, sub-agents inherit the caller's model unless overridden per agent or per call.
 - `maxConcurrent`: max concurrent sub-agent runs (default 1)
 - `archiveAfterMinutes`: auto-archive sub-agent sessions after N minutes (default 60; set `0` to disable)
 - Per-subagent tool policy: `tools.subagents.tools.allow` / `tools.subagents.tools.deny` (deny wins)
@@ -2500,7 +2533,7 @@ Notes:
 }
 ```
 
-### Z.AI (GLM-4.7) — provider alias support
+### Z.AI (GLM-4.7) - provider alias support
 
 Z.AI models are available via the built-in `zai` provider. Set `ZAI_API_KEY`
 in your environment and reference the model by provider/model.
@@ -2523,7 +2556,7 @@ Notes:
 - `z.ai/*` and `z-ai/*` are accepted aliases and normalize to `zai/*`.
 - If `ZAI_API_KEY` is missing, requests to `zai/*` will fail with an auth error at runtime.
 - Example error: `No API key found for provider "zai".`
-- Z.AI’s general API endpoint is `https://api.z.ai/api/paas/v4`. GLM coding
+- Z.AI's general API endpoint is `https://api.z.ai/api/paas/v4`. GLM coding
   requests use the dedicated Coding endpoint `https://api.z.ai/api/coding/paas/v4`.
   The built-in `zai` provider uses the Coding endpoint. If you need the general
   endpoint, define a custom provider in `models.providers` with the base URL
@@ -2639,7 +2672,7 @@ Notes:
 - Model ref: `synthetic/hf:MiniMaxAI/MiniMax-M2.1`.
 - Base URL should omit `/v1` because the Anthropic client appends it.
 
-### Local models (LM Studio) — recommended setup
+### Local models (LM Studio) - recommended setup
 
 See [/gateway/local-models](/gateway/local-models) for the current local guidance. TL;DR: run MiniMax M2.1 via LM Studio Responses API on serious hardware; keep hosted models merged for fallback.
 
@@ -2765,7 +2798,7 @@ Controls session scoping, reset policy, reset triggers, and where the session st
     // Direct chats collapse to agent:<agentId>:<mainKey> (default: "main").
     mainKey: "main",
     agentToAgent: {
-      // Max ping-pong reply turns between requester/target (0–5).
+      // Max ping-pong reply turns between requester/target (0-5).
       maxPingPongTurns: 5,
     },
     sendPolicy: {
@@ -2778,7 +2811,7 @@ Controls session scoping, reset policy, reset triggers, and where the session st
 
 Fields:
 
-- `mainKey`: direct-chat bucket key (default: `"main"`). Useful when you want to “rename” the primary DM thread without changing `agentId`.
+- `mainKey`: direct-chat bucket key (default: `"main"`). Useful when you want to "rename" the primary DM thread without changing `agentId`.
   - Sandbox note: `agents.defaults.sandbox.mode: "non-main"` uses this key to detect the main session. Any session key that does not match `mainKey` (groups/channels) is sandboxed.
 - `dmScope`: how DM sessions are grouped (default: `"main"`).
   - `main`: all DMs share the main session for continuity.
@@ -2795,7 +2828,7 @@ Fields:
 - `resetByType`: per-session overrides for `dm`, `group`, and `thread`.
   - If you only set legacy `session.idleMinutes` without any `reset`/`resetByType`, OpenClaw stays in idle-only mode for backward compatibility.
 - `heartbeatIdleMinutes`: optional idle override for heartbeat checks (daily reset still applies when enabled).
-- `agentToAgent.maxPingPongTurns`: max reply-back turns between requester/target (0–5, default 5).
+- `agentToAgent.maxPingPongTurns`: max reply-back turns between requester/target (0-5, default 5).
 - `sendPolicy.default`: `allow` or `deny` fallback when no rule matches.
 - `sendPolicy.rules[]`: match by `channel`, `chatType` (`direct|group|room`), or `keyPrefix` (e.g. `cron:`). First deny wins; otherwise allow.
 
@@ -2816,7 +2849,7 @@ Fields:
 
 Per-skill fields:
 
-- `enabled`: set `false` to disable a skill even if it’s bundled/installed.
+- `enabled`: set `false` to disable a skill even if it's bundled/installed.
 - `env`: environment variables injected for the agent run (only if not already set).
 - `apiKey`: optional convenience for skills that declare a primary env var (e.g. `nano-banana-pro` → `GEMINI_API_KEY`).
 
@@ -2953,7 +2986,7 @@ Use `gateway.mode` to explicitly declare whether this machine should run the Gat
 
 Defaults:
 
-- mode: **unset** (treated as “do not auto-start”)
+- mode: **unset** (treated as "do not auto-start")
 - bind: `loopback`
 - port: `18789` (single port for WS + HTTP)
 
@@ -3247,8 +3280,8 @@ If you need the backend to receive the prefixed path, set
 
 The Gateway serves a directory of HTML/CSS/JS over HTTP so iOS/Android nodes can simply `canvas.navigate` to it.
 
-Default root: `~/.openclaw/workspace/canvas`  
-Default port: `18793` (chosen to avoid the openclaw browser CDP port `18792`)  
+Default root: `~/.openclaw/workspace/canvas`
+Default port: `18793` (chosen to avoid the openclaw browser CDP port `18792`)
 The server listens on the **gateway bind host** (LAN or Tailnet) so nodes can reach it.
 
 The server:
@@ -3298,8 +3331,8 @@ Defaults:
 
 Bind modes:
 
-- `lan`: `0.0.0.0` (reachable on any interface, including LAN/Wi‑Fi and Tailscale)
-- `tailnet`: bind only to the machine’s Tailscale IP (recommended for Vienna ⇄ London)
+- `lan`: `0.0.0.0` (reachable on any interface, including LAN/Wi-Fi and Tailscale)
+- `tailnet`: bind only to the machine's Tailscale IP (recommended for Vienna ⇄ London)
 - `loopback`: `127.0.0.1` (local only)
 - `auto`: prefer tailnet IP if present, else `lan`
 
@@ -3346,7 +3379,7 @@ Controls LAN mDNS discovery broadcasts (`_openclaw-gw._tcp`).
 }
 ```
 
-### `discovery.wideArea` (Wide-Area Bonjour / unicast DNS‑SD)
+### `discovery.wideArea` (Wide-Area Bonjour / unicast DNS-SD)
 
 When enabled, the Gateway writes a unicast DNS-SD zone for `_openclaw-gw._tcp` under `~/.openclaw/dns/` using the configured discovery domain (example: `openclaw.internal.`).
 

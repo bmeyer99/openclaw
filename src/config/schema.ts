@@ -313,6 +313,11 @@ const FIELD_LABELS: Record<string, string> = {
   "session.agentToAgent.maxPingPongTurns": "Agent-to-Agent Ping-Pong Turns",
   "messages.ackReaction": "Ack Reaction Emoji",
   "messages.ackReactionScope": "Ack Reaction Scope",
+  "messages.lifecycleReactions": "Lifecycle Reactions",
+  "messages.lifecycleReactions.received": "Received Reaction",
+  "messages.lifecycleReactions.queued": "Queued Reaction",
+  "messages.lifecycleReactions.processing": "Processing Reaction",
+  "messages.lifecycleReactions.complete": "Complete Reaction",
   "messages.inbound.debounceMs": "Inbound Message Debounce (ms)",
   "talk.apiKey": "Talk API Key",
   "channels.whatsapp": "WhatsApp",
@@ -697,6 +702,14 @@ const FIELD_HELP: Record<string, string> = {
   "messages.ackReaction": "Emoji reaction used to acknowledge inbound messages (empty disables).",
   "messages.ackReactionScope":
     'When to send ack reactions ("group-mentions", "group-all", "direct", "all").',
+  "messages.lifecycleReactions":
+    "Stage-aware emoji reactions for message processing lifecycle (replaces simple ackReaction when set).",
+  "messages.lifecycleReactions.received":
+    "Emoji when message is first received (defaults to ackReaction if set).",
+  "messages.lifecycleReactions.queued": "Emoji when message is queued waiting for processing slot.",
+  "messages.lifecycleReactions.processing": "Emoji when model is actively generating a response.",
+  "messages.lifecycleReactions.complete":
+    "Emoji when response is complete (signals your turn to reply).",
   "messages.inbound.debounceMs":
     "Debounce window (ms) for batching rapid inbound messages from the same sender (0 to disable).",
   "channels.telegram.dmPolicy":
