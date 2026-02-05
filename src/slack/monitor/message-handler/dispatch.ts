@@ -5,7 +5,7 @@ import { clearHistoryEntriesIfEnabled } from "../../../auto-reply/reply/history.
 import { createReplyDispatcherWithTyping } from "../../../auto-reply/reply/reply-dispatcher.js";
 import { removeAckReactionAfterReply } from "../../../channels/ack-reactions.js";
 import { logAckFailure, logTypingFailure } from "../../../channels/logging.js";
-import { createReplyPrefixContext } from "../../../channels/reply-prefix.js";
+import { createReplyPrefixOptions } from "../../../channels/reply-prefix.js";
 import { createTypingCallbacks } from "../../../channels/typing.js";
 import { resolveStorePath, updateLastRoute } from "../../../config/sessions.js";
 import { danger, logVerbose, shouldLogVerbose } from "../../../globals.js";
@@ -95,11 +95,15 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
     },
   });
 
-  const prefixContext = createReplyPrefixContext({ cfg, agentId: route.agentId });
+  const { onModelSelected, ...prefixOptions } = createReplyPrefixOptions({
+    cfg,
+    agentId: route.agentId,
+    channel: "slack",
+    accountId: route.accountId,
+  });
 
   const { dispatcher, replyOptions, markDispatchIdle } = createReplyDispatcherWithTyping({
-    responsePrefix: prefixContext.responsePrefix,
-    responsePrefixContextProvider: prefixContext.responsePrefixContextProvider,
+    ...prefixOptions,
     humanDelay: resolveHumanDelayConfig(cfg, route.agentId),
     deliver: async (payload) => {
       const replyThreadTs = replyPlan.nextThreadTs();
@@ -122,6 +126,9 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
     onIdle: typingCallbacks.onIdle,
   });
 
+  // Transition to "processing" stage when model starts
+  void prepared.lifecycleManager?.processing();
+
   const { queuedFinal, counts } = await dispatchInboundMessage({
     ctx: prepared.ctxPayload,
     cfg,
@@ -134,9 +141,7 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
         typeof account.config.blockStreaming === "boolean"
           ? !account.config.blockStreaming
           : undefined,
-      onModelSelected: (ctx) => {
-        prefixContext.onModelSelected(ctx);
-      },
+      onModelSelected,
     },
   });
   markDispatchIdle();
@@ -161,29 +166,46 @@ export async function dispatchPreparedSlackMessage(prepared: PreparedSlackMessag
     );
   }
 
-  removeAckReactionAfterReply({
-    removeAfterReply: ctx.removeAckAfterReply,
-    ackReactionPromise: prepared.ackReactionPromise,
-    ackReactionValue: prepared.ackReactionValue,
-    remove: () =>
-      removeSlackReaction(
-        message.channel,
-        prepared.ackReactionMessageTs ?? "",
-        prepared.ackReactionValue,
-        {
-          token: ctx.botToken,
-          client: ctx.app.client,
-        },
-      ),
-    onError: (err) => {
-      logAckFailure({
-        log: logVerbose,
-        channel: "slack",
-        target: `${message.channel}/${message.ts}`,
-        error: err,
+  // Handle reaction cleanup after reply
+  if (prepared.lifecycleManager) {
+    // Transition to "complete" stage, then clear if removeAckAfterReply is set
+    // Best-effort: catch errors to avoid unhandled rejections (rate limits, perms, etc.)
+    void prepared.lifecycleManager
+      .complete()
+      .then(() => {
+        if (ctx.removeAckAfterReply) {
+          return prepared.lifecycleManager?.clear();
+        }
+      })
+      .catch((err) => {
+        logVerbose(`slack: lifecycle reaction cleanup failed: ${err}`);
       });
-    },
-  });
+  } else {
+    // Legacy removeAckReactionAfterReply when no lifecycle manager
+    removeAckReactionAfterReply({
+      removeAfterReply: ctx.removeAckAfterReply,
+      ackReactionPromise: prepared.ackReactionPromise,
+      ackReactionValue: prepared.ackReactionValue,
+      remove: () =>
+        removeSlackReaction(
+          message.channel,
+          prepared.ackReactionMessageTs ?? "",
+          prepared.ackReactionValue,
+          {
+            token: ctx.botToken,
+            client: ctx.app.client,
+          },
+        ),
+      onError: (err) => {
+        logAckFailure({
+          log: logVerbose,
+          channel: "slack",
+          target: `${message.channel}/${message.ts}`,
+          error: err,
+        });
+      },
+    });
+  }
 
   if (prepared.isRoomish) {
     clearHistoryEntriesIfEnabled({

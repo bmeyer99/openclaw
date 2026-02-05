@@ -202,6 +202,7 @@ const FIELD_LABELS: Record<string, string> = {
   "tools.web.fetch.userAgent": "Web Fetch User-Agent",
   "gateway.controlUi.basePath": "Control UI Base Path",
   "gateway.controlUi.root": "Control UI Assets Root",
+  "gateway.controlUi.allowedOrigins": "Control UI Allowed Origins",
   "gateway.controlUi.allowInsecureAuth": "Allow Insecure Control UI Auth",
   "gateway.controlUi.dangerouslyDisableDeviceAuth": "Dangerously Disable Control UI Device Auth",
   "gateway.http.endpoints.chatCompletions.enabled": "OpenAI Chat Completions Endpoint",
@@ -312,6 +313,11 @@ const FIELD_LABELS: Record<string, string> = {
   "session.agentToAgent.maxPingPongTurns": "Agent-to-Agent Ping-Pong Turns",
   "messages.ackReaction": "Ack Reaction Emoji",
   "messages.ackReactionScope": "Ack Reaction Scope",
+  "messages.lifecycleReactions": "Lifecycle Reactions",
+  "messages.lifecycleReactions.received": "Received Reaction",
+  "messages.lifecycleReactions.queued": "Queued Reaction",
+  "messages.lifecycleReactions.processing": "Processing Reaction",
+  "messages.lifecycleReactions.complete": "Complete Reaction",
   "messages.inbound.debounceMs": "Inbound Message Debounce (ms)",
   "talk.apiKey": "Talk API Key",
   "channels.whatsapp": "WhatsApp",
@@ -416,6 +422,8 @@ const FIELD_HELP: Record<string, string> = {
     "Optional URL prefix where the Control UI is served (e.g. /openclaw).",
   "gateway.controlUi.root":
     "Optional filesystem root for Control UI assets (defaults to dist/control-ui).",
+  "gateway.controlUi.allowedOrigins":
+    "Allowed browser origins for Control UI/WebChat websocket connections (full origins only, e.g. https://control.example.com).",
   "gateway.controlUi.allowInsecureAuth":
     "Allow Control UI auth over insecure HTTP (token-only; not recommended).",
   "gateway.controlUi.dangerouslyDisableDeviceAuth":
@@ -480,6 +488,8 @@ const FIELD_HELP: Record<string, string> = {
     'Perplexity model override (default: "perplexity/sonar-pro").',
   "tools.web.fetch.enabled": "Enable the web_fetch tool (lightweight HTTP fetch).",
   "tools.web.fetch.maxChars": "Max characters returned by web_fetch (truncated).",
+  "tools.web.fetch.maxCharsCap":
+    "Hard cap for web_fetch maxChars (applies to config and tool calls).",
   "tools.web.fetch.timeoutSeconds": "Timeout in seconds for web_fetch requests.",
   "tools.web.fetch.cacheTtlMinutes": "Cache TTL in minutes for web_fetch results.",
   "tools.web.fetch.maxRedirects": "Maximum redirects allowed for web_fetch (default: 3).",
@@ -692,6 +702,14 @@ const FIELD_HELP: Record<string, string> = {
   "messages.ackReaction": "Emoji reaction used to acknowledge inbound messages (empty disables).",
   "messages.ackReactionScope":
     'When to send ack reactions ("group-mentions", "group-all", "direct", "all").',
+  "messages.lifecycleReactions":
+    "Stage-aware emoji reactions for message processing lifecycle (replaces simple ackReaction when set).",
+  "messages.lifecycleReactions.received":
+    "Emoji when message is first received (defaults to ackReaction if set).",
+  "messages.lifecycleReactions.queued": "Emoji when message is queued waiting for processing slot.",
+  "messages.lifecycleReactions.processing": "Emoji when model is actively generating a response.",
+  "messages.lifecycleReactions.complete":
+    "Emoji when response is complete (signals your turn to reply).",
   "messages.inbound.debounceMs":
     "Debounce window (ms) for batching rapid inbound messages from the same sender (0 to disable).",
   "channels.telegram.dmPolicy":
@@ -751,6 +769,7 @@ const FIELD_PLACEHOLDERS: Record<string, string> = {
   "gateway.remote.sshTarget": "user@host",
   "gateway.controlUi.basePath": "/openclaw",
   "gateway.controlUi.root": "dist/control-ui",
+  "gateway.controlUi.allowedOrigins": "https://control.example.com",
   "channels.mattermost.baseUrl": "https://chat.example.com",
   "agents.list[].identity.avatar": "avatars/openclaw.png",
 };

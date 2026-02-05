@@ -20,4 +20,8 @@ export type PreparedSlackMessage = {
   ackReactionMessageTs?: string;
   ackReactionValue: string;
   ackReactionPromise: Promise<boolean> | null;
+  /** Lifecycle reaction manager for stage-aware reactions. */
+  lifecycleManager?: ReturnType<
+    typeof import("../../../channels/lifecycle-reactions.js").createLifecycleManager
+  >;
 };

@@ -86,6 +86,16 @@ export const SessionSchema = z
   .strict()
   .optional();
 
+export const LifecycleReactionsSchema = z
+  .object({
+    received: z.string().optional(),
+    queued: z.string().optional(),
+    processing: z.string().optional(),
+    complete: z.string().optional(),
+  })
+  .strict()
+  .optional();
+
 export const MessagesSchema = z
   .object({
     messagePrefix: z.string().optional(),
@@ -96,6 +106,7 @@ export const MessagesSchema = z
     ackReaction: z.string().optional(),
     ackReactionScope: z.enum(["group-mentions", "group-all", "direct", "all"]).optional(),
     removeAckAfterReply: z.boolean().optional(),
+    lifecycleReactions: LifecycleReactionsSchema,
     tts: TtsConfigSchema,
   })
   .strict()
