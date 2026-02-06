@@ -301,7 +301,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("Bravo");
   });
 
-  it("adds SOUL guidance when a soul file is present", () => {
+  it("places SOUL.md content first and omits it from project context files", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/openclaw",
       contextFiles: [
@@ -310,9 +310,32 @@ describe("buildAgentSystemPrompt", () => {
       ],
     });
 
-    expect(prompt).toContain(
-      "If SOUL.md is present, embody its persona and tone. Avoid stiff, generic replies; follow its guidance unless higher-priority instructions override it.",
-    );
+    // SOUL.md content should appear before tooling
+    const personaIndex = prompt.indexOf("Persona");
+    const toolingIndex = prompt.indexOf("## Tooling");
+    expect(personaIndex).toBeLessThan(toolingIndex);
+    // Should not duplicate SOUL.md in the context files section
+    expect(prompt).not.toContain("## ./SOUL.md");
+    expect(prompt).not.toContain("## dir\\SOUL.md");
+    // With only SOUL.md files and no other context, Project Context section is omitted
+    expect(prompt).not.toContain("# Project Context");
+    // Should not contain the old generic opening when SOUL.md is present
+    expect(prompt).not.toContain("You are a personal assistant running inside OpenClaw.");
+  });
+
+  it("includes SOUL guidance note when SOUL.md and other context files are present", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      contextFiles: [
+        { path: "SOUL.md", content: "Persona" },
+        { path: "AGENTS.md", content: "Rules" },
+      ],
+    });
+
+    expect(prompt).toContain("# Project Context");
+    expect(prompt).toContain("SOUL.md has been loaded as the agent identity (above).");
+    expect(prompt).toContain("## AGENTS.md");
+    expect(prompt).not.toContain("## SOUL.md");
   });
 
   it("summarizes the message tool when available", () => {
@@ -424,5 +447,77 @@ describe("buildAgentSystemPrompt", () => {
 
     expect(prompt).toContain("## Reactions");
     expect(prompt).toContain("Reactions are enabled for Telegram in MINIMAL mode.");
+  });
+
+  it("uses default opening when no SOUL.md is present", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+    });
+
+    expect(prompt).toContain("You are a personal assistant running inside OpenClaw.");
+  });
+
+  it("replaces default opening with SOUL.md content when present", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      contextFiles: [
+        { path: "SOUL.md", content: "You are Jeeves. Unflappable butler." },
+        { path: "AGENTS.md", content: "Rules" },
+      ],
+    });
+
+    // SOUL.md replaces the generic opener
+    expect(prompt).not.toContain("You are a personal assistant running inside OpenClaw.");
+    expect(prompt.startsWith("You are Jeeves. Unflappable butler.")).toBe(true);
+    // Other context files still appear
+    expect(prompt).toContain("## AGENTS.md");
+    expect(prompt).toContain("Rules");
+    // SOUL.md should NOT appear again in the context section
+    expect(prompt).not.toContain("## SOUL.md");
+  });
+
+  it("uses first SOUL.md when multiple are present", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      contextFiles: [
+        { path: "SOUL.md", content: "Primary identity" },
+        { path: "extra/SOUL.md", content: "Secondary identity" },
+      ],
+    });
+
+    expect(prompt.startsWith("Primary identity")).toBe(true);
+    // Neither SOUL.md should appear in the context files section
+    expect(prompt).not.toContain("## SOUL.md");
+    expect(prompt).not.toContain("## extra/SOUL.md");
+  });
+
+  it("handles SOUL.md with only whitespace as absent", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      contextFiles: [{ path: "SOUL.md", content: "   \n  " }],
+    });
+
+    // Empty SOUL.md falls back to the default opening
+    expect(prompt).toContain("You are a personal assistant running inside OpenClaw.");
+  });
+
+  it("identity-first: SOUL.md content precedes all capability sections", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      contextFiles: [
+        { path: "SOUL.md", content: "# Identity\nYou see infrastructure everywhere." },
+      ],
+      toolNames: ["exec", "read"],
+    });
+
+    const identityIndex = prompt.indexOf("You see infrastructure everywhere.");
+    const toolingIndex = prompt.indexOf("## Tooling");
+    const safetyIndex = prompt.indexOf("## Safety");
+    const workspaceIndex = prompt.indexOf("## Workspace");
+
+    expect(identityIndex).toBeGreaterThanOrEqual(0);
+    expect(toolingIndex).toBeGreaterThan(identityIndex);
+    expect(safetyIndex).toBeGreaterThan(identityIndex);
+    expect(workspaceIndex).toBeGreaterThan(identityIndex);
   });
 });

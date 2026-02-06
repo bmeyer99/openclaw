@@ -2,9 +2,14 @@ import { Type } from "@sinclair/typebox";
 import crypto from "node:crypto";
 import type { GatewayMessageChannel } from "../../utils/message-channel.js";
 import type { AnyAgentTool } from "./common.js";
+import {
+  buildContextHookPrompt,
+  fetchMcpContext,
+} from "../../auto-reply/reply/mcp-context-hook.js";
 import { formatThinkingLevels, normalizeThinkLevel } from "../../auto-reply/thinking.js";
 import { loadConfig } from "../../config/config.js";
 import { callGateway } from "../../gateway/call.js";
+import { logVerbose } from "../../globals.js";
 import {
   isSubagentSessionKey,
   normalizeAgentId,
@@ -214,12 +219,34 @@ export function createSessionsSpawnTool(opts?: {
           modelWarning = messageText;
         }
       }
+      // Fetch dynamic context from configured MCP hook (e.g., RAG/knowledge graph).
+      // This gives the subagent project-level context: architecture, patterns, shared
+      // systems, conventions, and constraints relevant to the task.
+      let ragContext = "";
+      const contextHookConfig = cfg.agents?.defaults?.contextHook;
+      if (contextHookConfig?.enabled && task.trim().length >= 10) {
+        try {
+          const hookResult = await fetchMcpContext(contextHookConfig, {
+            messageText: task,
+          });
+          ragContext = buildContextHookPrompt(hookResult);
+          if (ragContext) {
+            logVerbose(
+              `sessions-spawn: injected ${ragContext.length} chars of context for subagent`,
+            );
+          }
+        } catch (error) {
+          logVerbose(`sessions-spawn: context hook failed (non-fatal): ${String(error)}`);
+        }
+      }
+
       const childSystemPrompt = buildSubagentSystemPrompt({
         requesterSessionKey,
         requesterOrigin,
         childSessionKey,
         label: label || undefined,
         task,
+        ragContext: ragContext || undefined,
       });
 
       const childIdem = crypto.randomUUID();
