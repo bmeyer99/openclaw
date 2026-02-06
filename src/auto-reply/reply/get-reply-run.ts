@@ -40,6 +40,7 @@ import { runReplyAgent } from "./agent-runner.js";
 import { applySessionHints } from "./body.js";
 import { buildGroupIntro } from "./groups.js";
 import { resolveQueueSettings } from "./queue.js";
+import { buildRagContextPrompt, fetchRagContext } from "./rag-context-injection.js";
 import { routeReply } from "./route-reply.js";
 import { ensureSkillSnapshot, prependSystemEvents } from "./session-updates.js";
 import { resolveTypingMode } from "./typing-mode.js";
@@ -181,7 +182,34 @@ export async function runPreparedReply(
       })
     : "";
   const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
-  const extraSystemPrompt = [groupIntro, groupSystemPrompt].filter(Boolean).join("\n\n");
+
+  // Fetch RAG context for enhanced agent awareness
+  const ragContextEnabled = cfg.agents?.defaults?.ragContext?.enabled !== false;
+  let ragContextPrompt = "";
+  if (ragContextEnabled && sessionCtx.Body) {
+    try {
+      // Extract thread_ts and channel_id from the To field (format: channel:CHANNEL_ID)
+      const channelMatch = sessionCtx.To?.match(/channel:(\w+)/);
+      const channelId = channelMatch?.[1];
+      // Extract thread_ts from MessageThreadId if available
+      const threadTs = sessionCtx.MessageThreadId;
+
+      const ragContext = await fetchRagContext({
+        messageText: sessionCtx.Body,
+        senderName: sessionCtx.SenderName,
+        threadTs,
+        channelId,
+        contextBudgetTokens: cfg.agents?.defaults?.ragContext?.budgetTokens ?? 60000,
+      });
+      ragContextPrompt = buildRagContextPrompt(ragContext);
+    } catch (error) {
+      logVerbose(`rag-context: failed to fetch: ${String(error)}`);
+    }
+  }
+
+  const extraSystemPrompt = [groupIntro, groupSystemPrompt, ragContextPrompt]
+    .filter(Boolean)
+    .join("\n\n");
   const baseBody = sessionCtx.BodyStripped ?? sessionCtx.Body ?? "";
   // Use CommandBody/RawBody for bare reset detection (clean message without structural context).
   const rawBodyTrimmed = (ctx.CommandBody ?? ctx.RawBody ?? ctx.Body ?? "").trim();
