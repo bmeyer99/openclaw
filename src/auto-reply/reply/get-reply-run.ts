@@ -39,8 +39,8 @@ import { SILENT_REPLY_TOKEN } from "../tokens.js";
 import { runReplyAgent } from "./agent-runner.js";
 import { applySessionHints } from "./body.js";
 import { buildGroupIntro } from "./groups.js";
+import { buildContextHookPrompt, fetchMcpContext } from "./mcp-context-hook.js";
 import { resolveQueueSettings } from "./queue.js";
-import { buildRagContextPrompt, fetchRagContext } from "./rag-context-injection.js";
 import { routeReply } from "./route-reply.js";
 import { ensureSkillSnapshot, prependSystemEvents } from "./session-updates.js";
 import { resolveTypingMode } from "./typing-mode.js";
@@ -183,31 +183,29 @@ export async function runPreparedReply(
     : "";
   const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
 
-  // Fetch RAG context for enhanced agent awareness
-  const ragContextEnabled = cfg.agents?.defaults?.ragContext?.enabled !== false;
-  let ragContextPrompt = "";
-  if (ragContextEnabled && sessionCtx.Body) {
+  // MCP Context Hook - call configured MCP tool to build context
+  const contextHookConfig = cfg.agents?.defaults?.contextHook;
+  let contextHookPrompt = "";
+  if (contextHookConfig?.enabled && sessionCtx.Body) {
     try {
-      // Extract thread_ts and channel_id from the To field (format: channel:CHANNEL_ID)
+      // Extract channel info from the To field (format: channel:CHANNEL_ID)
       const channelMatch = sessionCtx.To?.match(/channel:(\w+)/);
       const channelId = channelMatch?.[1];
-      // Extract thread_ts from MessageThreadId if available
-      const threadTs = sessionCtx.MessageThreadId;
 
-      const ragContext = await fetchRagContext({
+      const hookResult = await fetchMcpContext(contextHookConfig, {
         messageText: sessionCtx.Body,
         senderName: sessionCtx.SenderName,
-        threadTs,
+        threadId: sessionCtx.MessageThreadId,
         channelId,
-        contextBudgetTokens: cfg.agents?.defaults?.ragContext?.budgetTokens ?? 60000,
+        sessionKey,
       });
-      ragContextPrompt = buildRagContextPrompt(ragContext);
+      contextHookPrompt = buildContextHookPrompt(hookResult);
     } catch (error) {
-      logVerbose(`rag-context: failed to fetch: ${String(error)}`);
+      logVerbose(`mcp-context-hook: failed: ${String(error)}`);
     }
   }
 
-  const extraSystemPrompt = [groupIntro, groupSystemPrompt, ragContextPrompt]
+  const extraSystemPrompt = [groupIntro, groupSystemPrompt, contextHookPrompt]
     .filter(Boolean)
     .join("\n\n");
   const baseBody = sessionCtx.BodyStripped ?? sessionCtx.Body ?? "";
