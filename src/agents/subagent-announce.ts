@@ -294,6 +294,8 @@ export function buildSubagentSystemPrompt(params: {
   childSessionKey: string;
   label?: string;
   task?: string;
+  /** Dynamic context from MCP hook (e.g., RAG/knowledge graph). Injected as project context. */
+  ragContext?: string;
 }) {
   const taskText =
     typeof params.task === "string" && params.task.trim()
@@ -328,15 +330,31 @@ export function buildSubagentSystemPrompt(params: {
     "- NO pretending to be the main agent",
     "- Only use the `message` tool when explicitly instructed to contact a specific external recipient; otherwise return plain text and let the main agent deliver it",
     "",
+  ];
+
+  // Inject dynamic project context from MCP hook (RAG/knowledge graph).
+  // This gives the subagent awareness of project architecture, shared systems,
+  // conventions, and constraints relevant to the task.
+  const ragContent = params.ragContext?.trim();
+  if (ragContent) {
+    lines.push("## Project Context", "", ragContent, "");
+  }
+
+  lines.push(
     "## Session Context",
-    params.label ? `- Label: ${params.label}` : undefined,
-    params.requesterSessionKey ? `- Requester session: ${params.requesterSessionKey}.` : undefined,
-    params.requesterOrigin?.channel
-      ? `- Requester channel: ${params.requesterOrigin.channel}.`
-      : undefined,
-    `- Your session: ${params.childSessionKey}.`,
+    ...[
+      params.label ? `- Label: ${params.label}` : undefined,
+      params.requesterSessionKey
+        ? `- Requester session: ${params.requesterSessionKey}.`
+        : undefined,
+      params.requesterOrigin?.channel
+        ? `- Requester channel: ${params.requesterOrigin.channel}.`
+        : undefined,
+      `- Your session: ${params.childSessionKey}.`,
+    ].filter((line): line is string => line !== undefined),
     "",
-  ].filter((line): line is string => line !== undefined);
+  );
+
   return lines.join("\n");
 }
 

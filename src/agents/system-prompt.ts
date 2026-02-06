@@ -376,9 +376,28 @@ export function buildAgentSystemPrompt(params: {
     return "You are a personal assistant running inside OpenClaw.";
   }
 
-  const lines = [
-    "You are a personal assistant running inside OpenClaw.",
-    "",
+  // Extract SOUL.md from context files to place it first (identity-first prompting).
+  // SOUL.md defines who the agent IS — it must be the first thing the model reads,
+  // before any capability or tooling boilerplate.
+  const contextFiles = params.contextFiles ?? [];
+  const isSoulFile = (file: EmbeddedContextFile) => {
+    const normalizedPath = file.path.trim().replace(/\\/g, "/");
+    const baseName = normalizedPath.split("/").pop() ?? normalizedPath;
+    return baseName.toLowerCase() === "soul.md";
+  };
+  const soulFile = contextFiles.find(isSoulFile);
+  const remainingContextFiles = contextFiles.filter((file) => !isSoulFile(file));
+
+  const lines: string[] = [];
+
+  // Layer 1: Identity — SOUL.md content comes first when present.
+  if (soulFile?.content?.trim()) {
+    lines.push(soulFile.content.trim(), "");
+  } else {
+    lines.push("You are a personal assistant running inside OpenClaw.", "");
+  }
+
+  lines.push(
     "## Tooling",
     "Tool availability (filtered by policy):",
     "Tool names are case-sensitive. Call tools exactly as listed.",
@@ -513,7 +532,7 @@ export function buildAgentSystemPrompt(params: {
       messageToolHints: params.messageToolHints,
     }),
     ...buildVoiceSection({ isMinimal, ttsHint: params.ttsHint }),
-  ];
+  );
 
   if (extraSystemPrompt) {
     // Use "Subagent Context" header for minimal mode (subagents), otherwise "Group Chat Context"
@@ -548,21 +567,17 @@ export function buildAgentSystemPrompt(params: {
     lines.push("## Reasoning Format", reasoningHint, "");
   }
 
-  const contextFiles = params.contextFiles ?? [];
-  if (contextFiles.length > 0) {
-    const hasSoulFile = contextFiles.some((file) => {
-      const normalizedPath = file.path.trim().replace(/\\/g, "/");
-      const baseName = normalizedPath.split("/").pop() ?? normalizedPath;
-      return baseName.toLowerCase() === "soul.md";
-    });
-    lines.push("# Project Context", "", "The following project context files have been loaded:");
-    if (hasSoulFile) {
+  if (remainingContextFiles.length > 0) {
+    lines.push("# Project Context", "");
+    if (soulFile) {
       lines.push(
-        "If SOUL.md is present, embody its persona and tone. Avoid stiff, generic replies; follow its guidance unless higher-priority instructions override it.",
+        "SOUL.md has been loaded as the agent identity (above). Embody its persona and tone. Avoid stiff, generic replies; follow its guidance unless higher-priority instructions override it.",
       );
+    } else {
+      lines.push("The following project context files have been loaded:");
     }
     lines.push("");
-    for (const file of contextFiles) {
+    for (const file of remainingContextFiles) {
       lines.push(`## ${file.path}`, "", file.content, "");
     }
   }
