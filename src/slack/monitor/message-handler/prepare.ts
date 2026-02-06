@@ -475,6 +475,51 @@ export async function prepareSlackMessage(params: {
   });
 
   let combinedBody = body;
+
+  // Backfill thread history from Slack API if the in-memory map is empty for this thread.
+  // This ensures thread context survives gateway restarts.
+  if (isThreadReply && threadTs && ctx.historyLimit > 0) {
+    const existingHistory = ctx.channelHistories.get(historyKey) ?? [];
+    if (existingHistory.length === 0) {
+      try {
+        const repliesResult = await ctx.app.client.conversations.replies({
+          channel: message.channel,
+          ts: threadTs,
+          limit: ctx.historyLimit,
+          // Exclude the current message (it'll be added by the normal flow)
+        });
+        const replies = repliesResult.messages ?? [];
+        for (const reply of replies) {
+          // Skip the parent message (same ts as thread_ts) and the current message
+          if (reply.ts === threadTs || reply.ts === message.ts) continue;
+          const replyUser = reply.user ? await ctx.resolveUserName(reply.user) : null;
+          const replyName = replyUser?.name ?? reply.user ?? "Unknown";
+          const replyText = (reply.text ?? "").trim();
+          if (!replyText) continue;
+          recordPendingHistoryEntryIfEnabled({
+            historyMap: ctx.channelHistories,
+            historyKey,
+            limit: ctx.historyLimit,
+            entry: {
+              sender: replyName,
+              body: `${replyText}\n[slack message id: ${reply.ts} channel: ${message.channel} thread_ts: ${threadTs}]`,
+              timestamp: reply.ts ? Math.round(Number(reply.ts) * 1000) : undefined,
+              messageId: reply.ts,
+            },
+          });
+        }
+        if (replies.length > 1) {
+          ctx.logger.info(
+            { threadTs, count: replies.length - 1 },
+            "backfilled thread history from Slack API",
+          );
+        }
+      } catch (err) {
+        ctx.logger.warn({ threadTs, err: String(err) }, "failed to backfill thread history");
+      }
+    }
+  }
+
   if (isRoomish && ctx.historyLimit > 0) {
     combinedBody = buildPendingHistoryContextFromMap({
       historyMap: ctx.channelHistories,

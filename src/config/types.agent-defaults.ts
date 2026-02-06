@@ -198,6 +198,19 @@ export type AgentDefaultsConfig = {
   };
   /** Max concurrent agent runs across all conversations. Default: 1 (sequential). */
   maxConcurrent?: number;
+  /** MCP context hook — calls an MCP tool to build context before each agent turn. */
+  contextHook?: {
+    /** Enable the context hook. Default: false. */
+    enabled?: boolean;
+    /** MCP server name (e.g., "my-rag-server"). */
+    mcpServer?: string;
+    /** MCP tool name to call. Default: "build_agent_context". */
+    mcpTool?: string;
+    /** Timeout in milliseconds. Default: 10000. */
+    timeoutMs?: number;
+    /** Token budget for injected context. Default: 60000. */
+    budgetTokens?: number;
+  };
   /** Sub-agent defaults (spawned via sessions_spawn). */
   subagents?: {
     /** Max concurrent sub-agent runs (global lane: "subagent"). Default: 1. */

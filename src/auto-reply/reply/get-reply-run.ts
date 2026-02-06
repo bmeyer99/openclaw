@@ -39,6 +39,11 @@ import { SILENT_REPLY_TOKEN } from "../tokens.js";
 import { runReplyAgent } from "./agent-runner.js";
 import { applySessionHints } from "./body.js";
 import { buildGroupIntro } from "./groups.js";
+import {
+  buildContextHookPrompt,
+  extractRecentHistory,
+  fetchMcpContext,
+} from "./mcp-context-hook.js";
 import { resolveQueueSettings } from "./queue.js";
 import { routeReply } from "./route-reply.js";
 import { ensureSkillSnapshot, prependSystemEvents } from "./session-updates.js";
@@ -181,7 +186,33 @@ export async function runPreparedReply(
       })
     : "";
   const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
-  const extraSystemPrompt = [groupIntro, groupSystemPrompt].filter(Boolean).join("\n\n");
+
+  // MCP Context Hook - call configured MCP tool to build context
+  const contextHookConfig = cfg.agents?.defaults?.contextHook;
+  let contextHookPrompt = "";
+  if (contextHookConfig?.enabled && sessionCtx.Body) {
+    try {
+      // Extract channel info from the To field (format: channel:CHANNEL_ID)
+      const channelMatch = sessionCtx.To?.match(/channel:(\w+)/);
+      const channelId = channelMatch?.[1];
+
+      const hookResult = await fetchMcpContext(contextHookConfig, {
+        messageText: sessionCtx.RawBody ?? sessionCtx.Body,
+        recentMessages: extractRecentHistory(sessionCtx.Body, 5),
+        senderName: sessionCtx.SenderName,
+        threadId: sessionCtx.MessageThreadId,
+        channelId,
+        sessionKey,
+      });
+      contextHookPrompt = buildContextHookPrompt(hookResult);
+    } catch (error) {
+      logVerbose(`mcp-context-hook: error: ${String(error)}`);
+    }
+  }
+
+  const extraSystemPrompt = [groupIntro, groupSystemPrompt, contextHookPrompt]
+    .filter(Boolean)
+    .join("\n\n");
   const baseBody = sessionCtx.BodyStripped ?? sessionCtx.Body ?? "";
   // Use CommandBody/RawBody for bare reset detection (clean message without structural context).
   const rawBodyTrimmed = (ctx.CommandBody ?? ctx.RawBody ?? ctx.Body ?? "").trim();
