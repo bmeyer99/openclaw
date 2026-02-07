@@ -222,6 +222,48 @@ ${tail}`;
   return { ...msg, content: [asText(trimmed + note)] };
 }
 
+/**
+ * Drop oldest conversation turns when the total exceeds `maxTurns`.
+ * A "turn" starts at each user message and includes all following assistant/toolResult
+ * messages until the next user message. Messages before the first user message (e.g. identity
+ * bootstrapping) are always preserved.
+ *
+ * Returns the original array when no pruning is needed.
+ */
+export function pruneByMaxTurns(messages: AgentMessage[], maxTurns: number): AgentMessage[] {
+  if (maxTurns <= 0 || messages.length === 0) {
+    return messages;
+  }
+
+  // Find first user message — everything before it is protected (identity reads, etc.).
+  const firstUserIndex = findFirstUserIndex(messages);
+  if (firstUserIndex === null) {
+    return messages;
+  }
+
+  // Collect indices where each turn starts (= each user message at or after firstUserIndex).
+  const turnStarts: number[] = [];
+  for (let i = firstUserIndex; i < messages.length; i++) {
+    if (messages[i]?.role === "user") {
+      turnStarts.push(i);
+    }
+  }
+
+  // No pruning needed if within limit.
+  if (turnStarts.length <= maxTurns) {
+    return messages;
+  }
+
+  // Keep the last `maxTurns` turns. The cutoff is the start of the oldest kept turn.
+  const keepFromTurnIndex = turnStarts.length - maxTurns;
+  const keepFromMessageIndex = turnStarts[keepFromTurnIndex]!;
+
+  // Preserve pre-user messages + kept turns.
+  const preserved = messages.slice(0, firstUserIndex);
+  const kept = messages.slice(keepFromMessageIndex);
+  return [...preserved, ...kept];
+}
+
 export function pruneContextMessages(params: {
   messages: AgentMessage[];
   settings: EffectiveContextPruningSettings;
@@ -229,7 +271,11 @@ export function pruneContextMessages(params: {
   isToolPrunable?: (toolName: string) => boolean;
   contextWindowTokensOverride?: number;
 }): AgentMessage[] {
-  const { messages, settings, ctx } = params;
+  const { settings, ctx } = params;
+  // Apply turn-based pruning first — this is a hard cap independent of context window size.
+  let messages = settings.maxTurns
+    ? pruneByMaxTurns(params.messages, settings.maxTurns)
+    : params.messages;
   const contextWindowTokens =
     typeof params.contextWindowTokensOverride === "number" &&
     Number.isFinite(params.contextWindowTokensOverride) &&

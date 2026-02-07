@@ -5,6 +5,7 @@ import {
   computeEffectiveSettings,
   default as contextPruningExtension,
   DEFAULT_CONTEXT_PRUNING_SETTINGS,
+  pruneByMaxTurns,
   pruneContextMessages,
 } from "./context-pruning.js";
 import { getContextPruningRuntime, setContextPruningRuntime } from "./context-pruning/runtime.js";
@@ -521,5 +522,192 @@ describe("context-pruning", () => {
     expect(text).toContain("abcdef");
     expect(text).toContain("efghij");
     expect(text).toContain("[Tool result trimmed:");
+  });
+});
+
+describe("pruneByMaxTurns", () => {
+  it("keeps last N turns and drops older ones", () => {
+    const messages: AgentMessage[] = [
+      makeUser("turn1"),
+      makeAssistant("reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+      makeUser("turn3"),
+      makeAssistant("reply3"),
+      makeUser("turn4"),
+      makeAssistant("reply4"),
+    ];
+    const result = pruneByMaxTurns(messages, 2);
+    expect(result).toHaveLength(4);
+    expect((result[0] as { content: string }).content).toBe("turn3");
+    expect((result[2] as { content: string }).content).toBe("turn4");
+  });
+
+  it("preserves pre-user messages (identity reads)", () => {
+    const messages: AgentMessage[] = [
+      makeAssistant("identity-bootstrap"),
+      makeToolResult({ toolCallId: "t1", toolName: "read", text: "SOUL.md contents" }),
+      makeUser("turn1"),
+      makeAssistant("reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+      makeUser("turn3"),
+      makeAssistant("reply3"),
+    ];
+    const result = pruneByMaxTurns(messages, 2);
+    // Should keep: 2 pre-user messages + last 2 turns (4 messages) = 6
+    expect(result).toHaveLength(6);
+    expect(result[0]!.role).toBe("assistant");
+    expect(result[1]!.role).toBe("toolResult");
+    expect((result[2] as { content: string }).content).toBe("turn2");
+  });
+
+  it("counts multi-tool exchanges as a single turn", () => {
+    const messages: AgentMessage[] = [
+      makeUser("turn1"),
+      makeAssistant("thinking..."),
+      makeToolResult({ toolCallId: "t1", toolName: "exec", text: "output1" }),
+      makeAssistant("more thinking..."),
+      makeToolResult({ toolCallId: "t2", toolName: "read", text: "output2" }),
+      makeAssistant("final reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+    ];
+    const result = pruneByMaxTurns(messages, 1);
+    // Should keep only turn2 (the last turn)
+    expect(result).toHaveLength(2);
+    expect((result[0] as { content: string }).content).toBe("turn2");
+  });
+
+  it("returns original array when turns within limit", () => {
+    const messages: AgentMessage[] = [
+      makeUser("turn1"),
+      makeAssistant("reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+    ];
+    const result = pruneByMaxTurns(messages, 5);
+    expect(result).toBe(messages); // same reference = no copy
+  });
+
+  it("returns original array when no user messages exist", () => {
+    const messages: AgentMessage[] = [
+      makeAssistant("bootstrap"),
+      makeToolResult({ toolCallId: "t1", toolName: "read", text: "data" }),
+    ];
+    const result = pruneByMaxTurns(messages, 1);
+    expect(result).toBe(messages);
+  });
+
+  it("handles empty messages array", () => {
+    const result = pruneByMaxTurns([], 5);
+    expect(result).toHaveLength(0);
+  });
+
+  it("handles maxTurns of 0 (disabled)", () => {
+    const messages: AgentMessage[] = [makeUser("turn1"), makeAssistant("reply1")];
+    const result = pruneByMaxTurns(messages, 0);
+    expect(result).toBe(messages);
+  });
+});
+
+describe("pruneContextMessages with maxTurns", () => {
+  const baseSettings = {
+    ...DEFAULT_CONTEXT_PRUNING_SETTINGS,
+    maxTurns: 3,
+  };
+  const ctxStub: Pick<ExtensionContext, "model"> = {
+    model: {
+      contextWindow: 200_000,
+      id: "test",
+      name: "test",
+      provider: "test",
+    } as ExtensionContext["model"],
+  };
+
+  it("applies maxTurns before ratio-based pruning", () => {
+    const messages: AgentMessage[] = [
+      makeUser("turn1"),
+      makeAssistant("reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+      makeUser("turn3"),
+      makeAssistant("reply3"),
+      makeUser("turn4"),
+      makeAssistant("reply4"),
+      makeUser("turn5"),
+      makeAssistant("reply5"),
+    ];
+    const result = pruneContextMessages({
+      messages,
+      settings: baseSettings,
+      ctx: ctxStub,
+    });
+    // maxTurns=3 → keeps last 3 turns = 6 messages
+    expect(result).toHaveLength(6);
+    expect((result[0] as { content: string }).content).toBe("turn3");
+  });
+
+  it("skips maxTurns when not configured", () => {
+    const messages: AgentMessage[] = [
+      makeUser("turn1"),
+      makeAssistant("reply1"),
+      makeUser("turn2"),
+      makeAssistant("reply2"),
+    ];
+    const settingsWithoutMaxTurns = { ...DEFAULT_CONTEXT_PRUNING_SETTINGS };
+    const result = pruneContextMessages({
+      messages,
+      settings: settingsWithoutMaxTurns,
+      ctx: ctxStub,
+    });
+    // No maxTurns → no turn pruning, and context is small so no ratio pruning
+    expect(result).toHaveLength(4);
+  });
+});
+
+describe("computeEffectiveSettings with maxTurns", () => {
+  it("parses maxTurns from config", () => {
+    const settings = computeEffectiveSettings({
+      mode: "cache-ttl",
+      maxTurns: 25,
+    });
+    expect(settings).not.toBeNull();
+    expect(settings!.maxTurns).toBe(25);
+  });
+
+  it("leaves maxTurns undefined when not specified", () => {
+    const settings = computeEffectiveSettings({
+      mode: "cache-ttl",
+    });
+    expect(settings).not.toBeNull();
+    expect(settings!.maxTurns).toBeUndefined();
+  });
+
+  it("ignores maxTurns of 0", () => {
+    const settings = computeEffectiveSettings({
+      mode: "cache-ttl",
+      maxTurns: 0,
+    });
+    expect(settings).not.toBeNull();
+    expect(settings!.maxTurns).toBeUndefined();
+  });
+
+  it("ignores negative maxTurns", () => {
+    const settings = computeEffectiveSettings({
+      mode: "cache-ttl",
+      maxTurns: -5,
+    });
+    expect(settings).not.toBeNull();
+    expect(settings!.maxTurns).toBeUndefined();
+  });
+
+  it("floors fractional maxTurns", () => {
+    const settings = computeEffectiveSettings({
+      mode: "cache-ttl",
+      maxTurns: 10.7,
+    });
+    expect(settings).not.toBeNull();
+    expect(settings!.maxTurns).toBe(10);
   });
 });
