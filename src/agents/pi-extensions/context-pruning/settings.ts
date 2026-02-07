@@ -10,6 +10,8 @@ export type ContextPruningConfig = {
   mode?: ContextPruningMode;
   /** TTL to consider cache expired (duration string, default unit: minutes). */
   ttl?: string;
+  /** Maximum conversation turns to keep in context. Undefined = unlimited. */
+  maxTurns?: number;
   keepLastAssistants?: number;
   softTrimRatio?: number;
   hardClearRatio?: number;
@@ -29,6 +31,8 @@ export type ContextPruningConfig = {
 export type EffectiveContextPruningSettings = {
   mode: Exclude<ContextPruningMode, "off">;
   ttlMs: number;
+  /** Maximum conversation turns to keep. Undefined = unlimited. */
+  maxTurns?: number;
   keepLastAssistants: number;
   softTrimRatio: number;
   hardClearRatio: number;
@@ -82,6 +86,10 @@ export function computeEffectiveSettings(raw: unknown): EffectiveContextPruningS
     } catch {
       // keep default ttl
     }
+  }
+
+  if (typeof cfg.maxTurns === "number" && Number.isFinite(cfg.maxTurns) && cfg.maxTurns > 0) {
+    s.maxTurns = Math.floor(cfg.maxTurns);
   }
 
   if (typeof cfg.keepLastAssistants === "number" && Number.isFinite(cfg.keepLastAssistants)) {

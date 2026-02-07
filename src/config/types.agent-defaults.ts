@@ -27,6 +27,10 @@ export type AgentContextPruningConfig = {
   mode?: "off" | "cache-ttl";
   /** TTL to consider cache expired (duration string, default unit: minutes). */
   ttl?: string;
+  /** Maximum number of conversation turns to keep in context. A turn starts at each user message
+   *  and includes all following assistant/tool messages until the next user message. Oldest turns
+   *  beyond this limit are dropped from context (not deleted from storage). Undefined = no limit. */
+  maxTurns?: number;
   keepLastAssistants?: number;
   softTrimRatio?: number;
   hardClearRatio?: number;
