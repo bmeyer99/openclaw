@@ -16,7 +16,7 @@ import {
   isLikelyContextOverflowError,
   sanitizeUserFacingText,
 } from "../../agents/pi-embedded-helpers.js";
-import { runEmbeddedPiAgent } from "../../agents/pi-embedded.js";
+import { compactEmbeddedPiSession, runEmbeddedPiAgent } from "../../agents/pi-embedded.js";
 import {
   resolveAgentIdFromSessionKey,
   resolveGroupSessionKey,
@@ -81,6 +81,7 @@ export async function runAgentTurnWithFallback(params: {
 }): Promise<AgentRunLoopResult> {
   let didLogHeartbeatStrip = false;
   let autoCompactionCompleted = false;
+  let overflowCompactionAttempted = false;
   // Track payloads sent directly (not via pipeline) during tool flush to avoid duplicates.
   const directlySentBlockKeys = new Set<string>();
 
@@ -571,6 +572,72 @@ export async function runAgentTurnWithFallback(params: {
             text: "⚠️ Session history was corrupted. I've reset the conversation - please try again!",
           },
         };
+      }
+
+      // Auto-recover from context overflow by compacting and retrying.
+      // The embedded runner has its own overflow recovery, but some overflow errors
+      // are thrown before the runner gets a chance (e.g., pre-stream API rejection).
+      // This catch-level recovery handles those cases.
+      if (isContextOverflow && !isCompactionFailure && !overflowCompactionAttempted) {
+        overflowCompactionAttempted = true;
+        const run = params.followupRun.run;
+        const sessionEntry = params.getActiveSessionEntry();
+        if (sessionEntry?.sessionId) {
+          defaultRuntime.error(
+            `Context overflow caught pre-stream for ${params.sessionKey ?? run.sessionId}. Attempting auto-compaction before retry.`,
+          );
+          try {
+            const compactResult = await compactEmbeddedPiSession({
+              sessionId: run.sessionId,
+              sessionKey: params.sessionKey,
+              messageChannel: run.messageProvider,
+              groupId: sessionEntry.groupId,
+              groupChannel: sessionEntry.groupChannel,
+              groupSpace: sessionEntry.space,
+              spawnedBy: sessionEntry.spawnedBy,
+              sessionFile: run.sessionFile,
+              workspaceDir: run.workspaceDir,
+              config: run.config,
+              skillsSnapshot: run.skillsSnapshot,
+              provider: run.provider,
+              model: run.model,
+              thinkLevel: run.thinkLevel,
+              bashElevated: run.bashElevated ?? {
+                enabled: false,
+                allowed: false,
+                defaultLevel: "off",
+              },
+              ownerNumbers: run.ownerNumbers,
+            });
+            if (compactResult.ok && compactResult.compacted) {
+              logVerbose(
+                `Auto-compaction succeeded after overflow (${compactResult.result?.tokensBefore ?? "?"} tokens before). Retrying agent turn.`,
+              );
+              autoCompactionCompleted = true;
+              continue; // Retry the agent turn via while(true) loop
+            }
+            defaultRuntime.error(
+              `Auto-compaction did not free enough context: ${compactResult.reason ?? "nothing to compact"}`,
+            );
+          } catch (compactErr) {
+            defaultRuntime.error(
+              `Auto-compaction recovery failed: ${compactErr instanceof Error ? compactErr.message : String(compactErr)}`,
+            );
+          }
+          // Compaction failed or didn't help — try session reset as last resort
+          if (
+            !didResetAfterCompactionFailure &&
+            (await params.resetSessionAfterCompactionFailure(message))
+          ) {
+            didResetAfterCompactionFailure = true;
+            return {
+              kind: "final",
+              payload: {
+                text: "⚠️ Context was too large even after compaction. I've reset the conversation — please try again.",
+              },
+            };
+          }
+        }
       }
 
       defaultRuntime.error(`Embedded agent failed before reply: ${message}`);
