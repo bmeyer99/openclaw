@@ -1,0 +1,24 @@
+import "./auth-profiles-DKgK9hDN.js";
+import "./agent-scope-jm0ZdXwM.js";
+import "./utils-PmTbZoD1.js";
+import "./exec-BIMFe4XS.js";
+import "./github-copilot-token-rP-6QdKv.js";
+import "./pi-model-discovery-CsRo-xMp.js";
+import "./config-D2YxKDFm.js";
+import "./manifest-registry-tuAcHxrV.js";
+import "./server-context-CM_E6wD5.js";
+import "./errors-DdT2Dtkb.js";
+import "./message-channel-Csfn34Sf.js";
+import "./plugins-TrKFfrLt.js";
+import "./logging-fywhKCmE.js";
+import "./accounts-B5QZU96b.js";
+import "./paths-RvF0P6tQ.js";
+import "./routes-BYsSaHTN.js";
+import "./pi-embedded-helpers-lTQOm0Sp.js";
+import "./sandbox-CGhb3yKM.js";
+import "./skills-DtwGIkTI.js";
+import { t as describeImageWithModel } from "./image-CohUtSc5.js";
+import "./redact-CDPAzwi8.js";
+import "./tool-display-BMYWrp0L.js";
+
+export { describeImageWithModel };

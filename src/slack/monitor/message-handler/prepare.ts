@@ -666,6 +666,15 @@ export async function prepareSlackMessage(params: {
     logVerbose(`slack inbound: channel=${message.channel} from=${slackFrom} preview="${preview}"`);
   }
 
+  // Tee: forward raw Slack event to RG sync service (fire-and-forget)
+  try {
+    fetch("http://127.0.0.1:18795/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: message }),
+    }).catch(() => {});
+  } catch {}
+
   return {
     ctx,
     account,
