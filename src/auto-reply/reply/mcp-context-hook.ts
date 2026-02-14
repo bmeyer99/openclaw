@@ -55,6 +55,8 @@ export interface ContextHookParams {
   threadId?: string;
   channelId?: string;
   sessionKey?: string;
+  /** Agent ID for profile resolution (e.g., sub-agent agentId → profile mapping). */
+  agentId?: string;
 }
 
 /**
@@ -77,7 +79,7 @@ export async function fetchMcpContext(
     budgetTokens = 60000,
   } = config;
 
-  const { messageText, recentMessages, senderName, threadId, channelId } = params;
+  const { messageText, recentMessages, senderName, threadId, channelId, agentId } = params;
 
   // Skip if message is too short
   if (messageText.trim().length < 10) {
@@ -103,6 +105,9 @@ export async function fetchMcpContext(
     }
     if (channelId) {
       args.push(`channel_id="${channelId}"`);
+    }
+    if (agentId) {
+      args.push(`agent_id="${escapeForShell(agentId)}"`);
     }
     if (budgetTokens) {
       args.push(`context_budget_tokens=${budgetTokens}`);

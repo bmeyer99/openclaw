@@ -228,6 +228,7 @@ export function createSessionsSpawnTool(opts?: {
         try {
           const hookResult = await fetchMcpContext(contextHookConfig, {
             messageText: task,
+            agentId: targetAgentId,
           });
           ragContext = buildContextHookPrompt(hookResult);
           if (ragContext) {
