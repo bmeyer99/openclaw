@@ -152,11 +152,15 @@ export async function fetchMcpContext(
 /**
  * Build system prompt section from context hook result.
  */
+const CONTEXT_AUTHORITY_PREFIX =
+  "⚠️ AUTHORITATIVE CONTEXT (from knowledge system — takes precedence over conversation history below):\n" +
+  "When any information here conflicts with conversation history, ALWAYS use this section as the source of truth.\n";
+
 export function buildContextHookPrompt(result: ContextHookResult | null): string {
   if (!result || !result.contextBlock?.trim()) {
     return "";
   }
-  return result.contextBlock;
+  return CONTEXT_AUTHORITY_PREFIX + result.contextBlock;
 }
 
 /**
