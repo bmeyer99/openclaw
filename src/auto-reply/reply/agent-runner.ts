@@ -19,6 +19,7 @@ import {
   updateSessionStoreEntry,
 } from "../../config/sessions.js";
 import { emitDiagnosticEvent, isDiagnosticsEnabled } from "../../infra/diagnostic-events.js";
+import { logAiTurnEnd, logAiTurnError, logAiTurnLlm } from "../../observability/ai-turn-logger.js";
 import { defaultRuntime } from "../../runtime.js";
 import { estimateUsageCost, resolveModelCostConfig } from "../../utils/usage-format.js";
 import { resolveResponseUsageMode, type VerboseLevel } from "../thinking.js";
@@ -74,6 +75,8 @@ export async function runReplyAgent(params: {
   sessionCtx: TemplateContext;
   shouldInjectGroupIntro: boolean;
   typingMode: TypingMode;
+  traceId?: string;
+  turnIds?: import("../../observability/ai-turn-logger.js").TurnIdentifiers;
 }): Promise<ReplyPayload | ReplyPayload[] | undefined> {
   const {
     commandBody,
@@ -100,6 +103,8 @@ export async function runReplyAgent(params: {
     sessionCtx,
     shouldInjectGroupIntro,
     typingMode,
+    traceId,
+    turnIds,
   } = params;
 
   let activeSessionEntry = sessionEntry;
@@ -332,6 +337,13 @@ export async function runReplyAgent(params: {
     });
 
     if (runOutcome.kind === "final") {
+      if (traceId && turnIds) {
+        logAiTurnError(traceId, turnIds, {
+          message: "Turn ended early (session reset, compaction, or error)",
+          outcome: "llm_error",
+          totalMs: Date.now() - runStartedAt,
+        });
+      }
       return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
     }
 
@@ -399,6 +411,13 @@ export async function runReplyAgent(params: {
     // Otherwise, a late typing trigger (e.g. from a tool callback) can outlive the run and
     // keep the typing indicator stuck.
     if (payloadArray.length === 0) {
+      if (traceId && turnIds) {
+        logAiTurnEnd(traceId, turnIds, {
+          totalMs: Date.now() - runStartedAt,
+          toolCallCount: pendingToolTasks.size,
+          outcome: "empty",
+        });
+      }
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);
     }
 
@@ -422,6 +441,13 @@ export async function runReplyAgent(params: {
     didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
 
     if (replyPayloads.length === 0) {
+      if (traceId && turnIds) {
+        logAiTurnEnd(traceId, turnIds, {
+          totalMs: Date.now() - runStartedAt,
+          toolCallCount: pendingToolTasks.size,
+          outcome: "empty",
+        });
+      }
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);
     }
 
@@ -461,6 +487,36 @@ export async function runReplyAgent(params: {
         },
         costUsd,
         durationMs: Date.now() - runStartedAt,
+      });
+    }
+
+    // AI Turn Observability — emit LLM + end events to GCL
+    if (traceId && turnIds) {
+      const turnDurationMs = Date.now() - runStartedAt;
+      if (usage && hasNonzeroUsage(usage)) {
+        const costConfig = resolveModelCostConfig({
+          provider: providerUsed,
+          model: modelUsed,
+          config: cfg,
+        });
+        logAiTurnLlm(traceId, turnIds, {
+          provider: providerUsed,
+          model: modelUsed,
+          latencyMs: turnDurationMs,
+          usage: {
+            input: usage.input ?? 0,
+            output: usage.output ?? 0,
+            cacheRead: usage.cacheRead,
+            cacheWrite: usage.cacheWrite,
+            total: usage.total ?? (usage.input ?? 0) + (usage.output ?? 0),
+          },
+          costUsd: estimateUsageCost({ usage, cost: costConfig }),
+        });
+      }
+      logAiTurnEnd(traceId, turnIds, {
+        totalMs: turnDurationMs,
+        toolCallCount: pendingToolTasks.size,
+        outcome: replyPayloads.length > 0 ? "success" : "empty",
       });
     }
 

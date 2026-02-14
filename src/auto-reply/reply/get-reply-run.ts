@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import type { ExecToolDefaults } from "../../agents/bash-tools.js";
 import type { OpenClawConfig } from "../../config/config.js";
+import type { TurnIdentifiers } from "../../observability/ai-turn-logger.js";
 import type { MsgContext, TemplateContext } from "../templating.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
 import type { buildCommandContext } from "./commands.js";
@@ -21,6 +22,11 @@ import {
   updateSessionStore,
 } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
+import {
+  generateTraceId,
+  logAiTurnContext,
+  logAiTurnStart,
+} from "../../observability/ai-turn-logger.js";
 import { clearCommandLane, getQueueSize } from "../../process/command-queue.js";
 import { normalizeMainKey } from "../../routing/session-key.js";
 import { isReasoningTagProvider } from "../../utils/provider-utils.js";
@@ -187,24 +193,46 @@ export async function runPreparedReply(
     : "";
   const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
 
+  // AI Turn Observability — generate traceId for this turn
+  const traceId = generateTraceId();
+  const channelMatch = sessionCtx.To?.match(/channel:(\w+)/);
+  const turnChannelId = channelMatch?.[1];
+  const turnIds: TurnIdentifiers = {
+    sessionId,
+    channelId: turnChannelId,
+    threadId: sessionCtx.MessageThreadId,
+    userId: sessionCtx.SenderName,
+    profile: agentId,
+    agentId,
+  };
+
+  logAiTurnStart(traceId, turnIds);
+
   // MCP Context Hook - call configured MCP tool to build context
   const contextHookConfig = cfg.agents?.defaults?.contextHook;
   let contextHookPrompt = "";
   if (contextHookConfig?.enabled && sessionCtx.Body) {
     try {
-      // Extract channel info from the To field (format: channel:CHANNEL_ID)
-      const channelMatch = sessionCtx.To?.match(/channel:(\w+)/);
-      const channelId = channelMatch?.[1];
-
       const hookResult = await fetchMcpContext(contextHookConfig, {
         messageText: sessionCtx.RawBody ?? sessionCtx.Body,
         recentMessages: extractRecentHistory(sessionCtx.Body, 5),
         senderName: sessionCtx.SenderName,
         threadId: sessionCtx.MessageThreadId,
-        channelId,
+        channelId: turnChannelId,
         sessionKey,
       });
       contextHookPrompt = buildContextHookPrompt(hookResult);
+
+      // Log context phase with metadata from the hook result
+      if (hookResult?.metadata) {
+        logAiTurnContext(traceId, turnIds, {
+          buildMs: hookResult.metadata.latencyMs ?? 0,
+          tokensTotal: hookResult.metadata.tokensUsed as number | undefined,
+          tokensBySource: hookResult.metadata.tokensBySource as Record<string, number> | undefined,
+          sourcesUsed: hookResult.metadata.sourcesUsed as string[] | undefined,
+          fallbackUsed: hookResult.metadata.fallbackUsed as boolean | undefined,
+        });
+      }
     } catch (error) {
       logVerbose(`mcp-context-hook: error: ${String(error)}`);
     }
@@ -460,5 +488,7 @@ export async function runPreparedReply(
     sessionCtx,
     shouldInjectGroupIntro,
     typingMode,
+    traceId,
+    turnIds,
   });
 }
