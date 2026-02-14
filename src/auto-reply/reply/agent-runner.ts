@@ -19,7 +19,7 @@ import {
   updateSessionStoreEntry,
 } from "../../config/sessions.js";
 import { emitDiagnosticEvent, isDiagnosticsEnabled } from "../../infra/diagnostic-events.js";
-import { logAiTurnEnd, logAiTurnError, logAiTurnLlm } from "../../observability/ai-turn-logger.js";
+import { logAiTurnEnd, logAiTurnLlm } from "../../observability/ai-turn-logger.js";
 import { defaultRuntime } from "../../runtime.js";
 import { estimateUsageCost, resolveModelCostConfig } from "../../utils/usage-format.js";
 import { resolveResponseUsageMode, type VerboseLevel } from "../thinking.js";
@@ -130,6 +130,7 @@ export async function runReplyAgent(params: {
   });
 
   const pendingToolTasks = new Set<Promise<void>>();
+  let toolCallCount = 0;
   const blockReplyTimeoutMs = opts?.blockReplyTimeoutMs ?? BLOCK_REPLY_SEND_TIMEOUT_MS;
 
   const replyToChannel =
@@ -338,10 +339,10 @@ export async function runReplyAgent(params: {
 
     if (runOutcome.kind === "final") {
       if (traceId && turnIds) {
-        logAiTurnError(traceId, turnIds, {
-          message: "Turn ended early (session reset, compaction, or error)",
-          outcome: "llm_error",
+        logAiTurnEnd(traceId, turnIds, {
           totalMs: Date.now() - runStartedAt,
+          toolCallCount,
+          outcome: "aborted",
         });
       }
       return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
@@ -379,6 +380,7 @@ export async function runReplyAgent(params: {
       await blockReplyPipeline.flush({ force: true });
       blockReplyPipeline.stop();
     }
+    toolCallCount = pendingToolTasks.size;
     if (pendingToolTasks.size > 0) {
       await Promise.allSettled(pendingToolTasks);
     }
@@ -414,7 +416,7 @@ export async function runReplyAgent(params: {
       if (traceId && turnIds) {
         logAiTurnEnd(traceId, turnIds, {
           totalMs: Date.now() - runStartedAt,
-          toolCallCount: pendingToolTasks.size,
+          toolCallCount,
           outcome: "empty",
         });
       }
@@ -444,7 +446,7 @@ export async function runReplyAgent(params: {
       if (traceId && turnIds) {
         logAiTurnEnd(traceId, turnIds, {
           totalMs: Date.now() - runStartedAt,
-          toolCallCount: pendingToolTasks.size,
+          toolCallCount,
           outcome: "empty",
         });
       }
@@ -515,7 +517,7 @@ export async function runReplyAgent(params: {
       }
       logAiTurnEnd(traceId, turnIds, {
         totalMs: turnDurationMs,
-        toolCallCount: pendingToolTasks.size,
+        toolCallCount,
         outcome: replyPayloads.length > 0 ? "success" : "empty",
       });
     }

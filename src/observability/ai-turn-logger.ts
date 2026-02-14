@@ -17,7 +17,6 @@ import type {
   AiTurnErrorEvent,
   AiTurnEventBase,
   AiTurnLlmEvent,
-  AiTurnOutcome,
   AiTurnStartEvent,
 } from "./ai-turn-types.js";
 import { logVerbose } from "../globals.js";
