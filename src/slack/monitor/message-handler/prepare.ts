@@ -93,17 +93,6 @@ export async function prepareSlackMessage(params: {
     cfg.channels?.slack?.allowBots ??
     false;
 
-  // Tee: forward raw Slack event to RG sync service (fire-and-forget).
-  // Placed BEFORE bot-self filter so the bot's own outbound messages are
-  // also ingested into the knowledge pipeline.
-  try {
-    fetch("http://127.0.0.1:18795/ingest", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: message }),
-    }).catch(() => {});
-  } catch {}
-
   const isBotMessage = Boolean(message.bot_id);
   if (isBotMessage) {
     if (message.user && ctx.botUserId && message.user === ctx.botUserId) {
@@ -676,6 +665,15 @@ export async function prepareSlackMessage(params: {
   if (shouldLogVerbose()) {
     logVerbose(`slack inbound: channel=${message.channel} from=${slackFrom} preview="${preview}"`);
   }
+
+  // Tee: forward raw Slack event to RG sync service (fire-and-forget)
+  try {
+    fetch("http://127.0.0.1:18795/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: message }),
+    }).catch(() => {});
+  } catch {}
 
   return {
     ctx,

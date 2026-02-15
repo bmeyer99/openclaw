@@ -200,6 +200,26 @@ export async function sendMessageSlack(
     }
   }
 
+  // Tee: forward outbound message to RG sync service (fire-and-forget).
+  // Slack does not deliver bot's own message events back to the app in HTTP
+  // mode, so we capture outbound messages at send time.
+  try {
+    fetch("http://127.0.0.1:18795/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: {
+          type: "message",
+          subtype: "bot_message",
+          text: trimmedMessage,
+          ts: lastMessageId,
+          channel: channelId,
+          thread_ts: opts.threadTs,
+        },
+      }),
+    }).catch(() => {});
+  } catch {}
+
   return {
     messageId: lastMessageId || "unknown",
     channelId,
