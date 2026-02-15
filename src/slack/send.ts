@@ -17,6 +17,21 @@ import { resolveSlackBotToken } from "./token.js";
 
 const SLACK_TEXT_LIMIT = 4000;
 
+// Cache bot user ID per token to avoid repeated auth.test calls.
+const _botUserIdCache = new Map<string, string>();
+async function resolveBotUserId(client: WebClient, token: string): Promise<string | undefined> {
+  const cached = _botUserIdCache.get(token);
+  if (cached) return cached;
+  try {
+    const resp = await client.auth.test();
+    const uid = resp.user_id as string | undefined;
+    if (uid) _botUserIdCache.set(token, uid);
+    return uid;
+  } catch {
+    return undefined;
+  }
+}
+
 type SlackRecipient =
   | {
       kind: "user";
@@ -203,7 +218,10 @@ export async function sendMessageSlack(
   // Tee: forward outbound message to RG sync service (fire-and-forget).
   // Slack does not deliver bot's own message events back to the app in HTTP
   // mode, so we capture outbound messages at send time.
+  // Resolve bot user ID from the token so slack-stream can attribute the
+  // message to the correct agent (Jeeves, C-Suite execs, etc.).
   try {
+    const botUserId = await resolveBotUserId(client, token);
     fetch("http://127.0.0.1:18795/ingest", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -211,6 +229,7 @@ export async function sendMessageSlack(
         event: {
           type: "message",
           subtype: "bot_message",
+          user: botUserId,
           text: trimmedMessage,
           ts: lastMessageId,
           channel: channelId,
