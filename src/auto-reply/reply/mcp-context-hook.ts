@@ -43,6 +43,10 @@ export interface ContextHookResult {
   metadata?: {
     tokensUsed?: number;
     latencyMs?: number;
+    /** Model recommended by the context hook's complexity classifier (e.g. "anthropic/claude-sonnet-4-5"). */
+    recommended_model?: string;
+    /** Complexity level from the classifier: "low" | "medium" | "high". */
+    rewriter_complexity?: string;
     [key: string]: unknown;
   };
 }

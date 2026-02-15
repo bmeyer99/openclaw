@@ -140,8 +140,6 @@ export async function runPreparedReply(
     blockReplyChunking,
     resolvedBlockStreamingBreak,
     modelState,
-    provider,
-    model,
     perMessageQueueMode,
     perMessageQueueOptions,
     typing,
@@ -159,6 +157,8 @@ export async function runPreparedReply(
     sessionStore,
   } = params;
   let {
+    provider,
+    model,
     sessionEntry,
     resolvedThinkLevel,
     resolvedVerboseLevel,
@@ -232,6 +232,30 @@ export async function runPreparedReply(
           sourcesUsed: hookResult.metadata.sourcesUsed as string[] | undefined,
           fallbackUsed: hookResult.metadata.fallbackUsed as boolean | undefined,
         });
+      }
+
+      // --- Model Routing from Context Hook ---
+      // If the context hook recommends a model (via Flash complexity classifier)
+      // and the session has no manual model override, apply the recommendation.
+      const recommendedModel = hookResult?.metadata?.recommended_model;
+      const hasManualOverride = Boolean(sessionEntry?.modelOverride?.trim());
+      if (recommendedModel && !hasManualOverride) {
+        const parts = String(recommendedModel).split("/");
+        if (parts.length === 2 && parts[0] && parts[1]) {
+          const [recProvider, recModel] = parts;
+          const hookComplexity = hookResult?.metadata?.rewriter_complexity ?? "unknown";
+          if (recProvider !== provider || recModel !== model) {
+            logVerbose(
+              `model-routing: complexity=${hookComplexity}, routing ${provider}/${model} → ${recProvider}/${recModel}`,
+            );
+            provider = recProvider;
+            model = recModel;
+          } else {
+            logVerbose(
+              `model-routing: complexity=${hookComplexity}, already on recommended model ${provider}/${model}`,
+            );
+          }
+        }
       }
     } catch (error) {
       logVerbose(`mcp-context-hook: error: ${String(error)}`);
