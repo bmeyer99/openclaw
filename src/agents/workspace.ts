@@ -237,34 +237,18 @@ async function resolveMemoryBootstrapEntries(
 export async function loadWorkspaceBootstrapFiles(dir: string): Promise<WorkspaceBootstrapFile[]> {
   const resolvedDir = resolveUserPath(dir);
 
-  // REMOVED from injection (2026-02-16): AGENTS.md, IDENTITY.md, MEMORY.md
-  // These are now sourced dynamically via RG context injection (build_agent_context).
-  // Static file injection was causing stale data to poison the system prompt.
+  // ALL workspace files removed from static injection (2026-02-16).
+  // Context is now fully dynamic via RG build_agent_context:
+  //   - SOUL.md → DocObject type="soul" in Spanner, injected verbatim
+  //   - TOOLS.md → DocObject type="soul" title="jeeves-tools"
+  //   - USER.md → DocObject type="soul" title="jeeves-user"
+  //   - MEMORY.md, AGENTS.md, IDENTITY.md → RG memories/knowledge
+  //   - HEARTBEAT.md → empty (protocol in system-prompt.ts)
+  //   - BOOTSTRAP.md → was already missing
   const entries: Array<{
     name: WorkspaceBootstrapFileName;
     filePath: string;
-  }> = [
-    {
-      name: DEFAULT_SOUL_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_SOUL_FILENAME),
-    },
-    {
-      name: DEFAULT_TOOLS_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_TOOLS_FILENAME),
-    },
-    {
-      name: DEFAULT_USER_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_USER_FILENAME),
-    },
-    {
-      name: DEFAULT_HEARTBEAT_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_HEARTBEAT_FILENAME),
-    },
-    {
-      name: DEFAULT_BOOTSTRAP_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_BOOTSTRAP_FILENAME),
-    },
-  ];
+  }> = [];
 
   const result: WorkspaceBootstrapFile[] = [];
   for (const entry of entries) {
