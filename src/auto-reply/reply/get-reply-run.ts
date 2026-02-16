@@ -221,6 +221,7 @@ export async function runPreparedReply(
         threadId: sessionCtx.MessageThreadId,
         channelId: turnChannelId,
         sessionKey,
+        agentId,
       });
       contextHookPrompt = buildContextHookPrompt(hookResult);
       contextHookIdentity = hookResult?.identityBlock ?? "";

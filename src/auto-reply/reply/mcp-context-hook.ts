@@ -13,7 +13,8 @@
  *         "mcpServer": "my-rag-server",
  *         "mcpTool": "build_context",
  *         "timeoutMs": 10000,
- *         "budgetTokens": 60000
+ *         "budgetTokens": 60000,
+ *         "profile": "jeeves"
  *       }
  *     }
  *   }
@@ -26,6 +27,8 @@ import { logVerbose } from "../../globals.js";
 
 const execAsync = promisify(exec);
 
+const TAG = "[mcp-context-hook]";
+
 export interface ContextHookConfig {
   enabled?: boolean;
   /** MCP server name (e.g., "my-rag-server") */
@@ -36,6 +39,8 @@ export interface ContextHookConfig {
   timeoutMs?: number;
   /** Token budget for context (default: 60000) */
   budgetTokens?: number;
+  /** RG profile name for context resolution (e.g., "jeeves"). Falls back to agentId. */
+  profile?: string;
 }
 
 export interface ContextHookResult {
@@ -83,6 +88,7 @@ export async function fetchMcpContext(
     mcpTool = "build_agent_context",
     timeoutMs = 10000,
     budgetTokens = 60000,
+    profile,
   } = config;
 
   const { messageText, recentMessages, senderName, threadId, channelId, agentId } = params;
@@ -112,36 +118,65 @@ export async function fetchMcpContext(
     if (channelId) {
       args.push(`channel_id="${channelId}"`);
     }
+
+    // Profile resolution: explicit profile > agentId > nothing
+    // This is CRITICAL — without a profile, RG cannot resolve context sources.
+    const resolvedProfile = profile || agentId;
+    if (resolvedProfile) {
+      args.push(`profile="${escapeForShell(resolvedProfile)}"`);
+    }
     if (agentId) {
       args.push(`agent_id="${escapeForShell(agentId)}"`);
     }
+
     if (budgetTokens) {
       args.push(`context_budget_tokens=${budgetTokens}`);
     }
 
     const command = `mcporter call ${mcpServer}.${mcpTool} ${args.join(" ")}`;
 
-    logVerbose(`mcp-context-hook: calling ${mcpServer}.${mcpTool}`);
+    // Always log the call — this is the primary context pipeline, not optional debug info
+    console.log(
+      `${TAG} calling ${mcpServer}.${mcpTool} profile=${resolvedProfile || "NONE"} agent=${agentId || "NONE"} channel=${channelId || "?"} msgLen=${messageText.length}`,
+    );
 
     const { stdout, stderr } = await execAsync(command, {
       timeout: timeoutMs,
-      maxBuffer: 1024 * 1024,
+      maxBuffer: 2 * 1024 * 1024, // 2MB buffer to handle large context responses
     });
 
     if (stderr && !stdout) {
-      logVerbose(`mcp-context-hook: call failed: ${stderr.substring(0, 500)}`);
+      console.error(`${TAG} call failed (stderr only): ${stderr.substring(0, 500)}`);
       return null;
     }
 
     const result = JSON.parse(stdout.trim());
     const latencyMs = Date.now() - startTime;
 
-    logVerbose(`mcp-context-hook: fetched ${stdout.length} bytes in ${latencyMs}ms`);
+    // Detect RG-level errors (e.g., "No context profile resolved")
+    if (result.error) {
+      console.error(
+        `${TAG} RG returned error: ${result.error} | resolution=${JSON.stringify(result.resolution_attempted || {})} | profile=${resolvedProfile || "NONE"} agent=${agentId || "NONE"}`,
+      );
+      return null;
+    }
 
     // Handle both snake_case and camelCase response formats
     const contextBlock = result.context_block ?? result.contextBlock ?? "";
     const identityBlock = result.identity_block ?? result.identityBlock ?? "";
     const metadata = result.metadata ?? {};
+
+    // Log success with key metrics — always visible
+    console.log(
+      `${TAG} OK ${latencyMs}ms | context=${contextBlock.length}c identity=${identityBlock.length}c | profile=${resolvedProfile || "?"} | stdout=${stdout.length}b | complexity=${metadata.rewriter_complexity || "?"} model_hint=${metadata.recommended_model || "none"}`,
+    );
+
+    // Warn if we got a response but no content — something is wrong
+    if (!contextBlock && !identityBlock) {
+      console.warn(
+        `${TAG} WARNING: RG returned success but EMPTY context and identity blocks. Profile may be misconfigured. raw_keys=${Object.keys(result).join(",")}`,
+      );
+    }
 
     return {
       contextBlock,
@@ -152,7 +187,8 @@ export async function fetchMcpContext(
       },
     };
   } catch (error) {
-    logVerbose(`mcp-context-hook: failed: ${String(error)}`);
+    // Always log failures — this is critical infrastructure
+    console.error(`${TAG} FAILED: ${String(error)}`);
     return null;
   }
 }
