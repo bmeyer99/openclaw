@@ -1,14 +1,11 @@
 # Forgejo Action: RG Code Ingestion + GitHub Mirror
-# Place in each repo at .forgejo/workflows/rg-ingest-and-mirror.yml
+# Deployed to .forgejo/workflows/rg-ingest-and-mirror.yml in all repos
 #
-# Required org secrets (set at no13 org level):
+# Required org secrets:
 #   MIRROR_TOKEN  - GitHub PAT with repo push access
 #   MIRROR_ORG    - GitHub org/user name (e.g. bmeyer99)
 #
-# Optional org secrets:
-#   RG_MCP_URL    - RG MCP endpoint (default: http://localhost:8201/mcp)
-#
-# Runner label: "local" (runs directly on rg-vm host for filesystem access)
+# Runner label: "local" (runs on rg-vm host, not in Docker)
 
 name: RG Ingest & GitHub Mirror
 
@@ -21,103 +18,119 @@ jobs:
     name: Ingest into Raggedy Graphy
     runs-on: local
     steps:
-      - name: Checkout code
-        uses: https://code.forgejo.org/actions/checkout@v4
-
-      - name: Determine collection name
-        id: meta
+      - name: Checkout
+        id: checkout
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          WORK="/tmp/rg-ingest-$$"
+          rm -rf "$WORK"
+          git clone --depth 1 --branch ${{ github.ref_name }} \
+            http://forge-ci:${{ secrets.GITHUB_TOKEN }}@10.0.0.3:3000/${{ github.repository }}.git "$WORK"
+          echo "work_dir=$WORK" >> "$GITHUB_OUTPUT"
+          REPO_NAME="${{ github.repository }}"
+          REPO_NAME="${REPO_NAME##*/}"
+          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
           echo "collection=${REPO_NAME}_code" >> "$GITHUB_OUTPUT"
-          echo "repo_name=${REPO_NAME}" >> "$GITHUB_OUTPUT"
-          echo "📦 Repo: ${REPO_NAME} → Collection: ${REPO_NAME}_code"
+          echo "📦 Checked out $REPO_NAME"
 
       - name: Sync to RG sandbox
         run: |
-          # RG staging runs with ProtectSystem=strict, ReadWritePaths=/opt/raggedy-graphy-staging
-          DEST="/opt/raggedy-graphy-staging/repos/${{ steps.meta.outputs.repo_name }}"
+          DEST="/opt/raggedy-graphy-staging/repos/${{ steps.checkout.outputs.repo_name }}"
           sudo mkdir -p /opt/raggedy-graphy-staging/repos
           sudo rsync -a --delete \
             --exclude=node_modules --exclude=.git --exclude=dist \
             --exclude=venv --exclude=__pycache__ --exclude=.next \
             --exclude=.forgejo --exclude=build --exclude=coverage \
-            "${GITHUB_WORKSPACE}/" "${DEST}/"
+            "${{ steps.checkout.outputs.work_dir }}/" "${DEST}/"
           sudo chown -R rg:rg /opt/raggedy-graphy-staging/repos
-          echo "✅ Synced $(find "${DEST}" -type f | wc -l) files to ${DEST}"
+          FILE_COUNT=$(find "${DEST}" -type f | wc -l)
+          echo "✅ Synced ${FILE_COUNT} files to ${DEST}"
+          rm -rf "${{ steps.checkout.outputs.work_dir }}"
 
       - name: Ingest into RG
         run: |
-          COLLECTION="${{ steps.meta.outputs.collection }}"
-          REPO_PATH="/opt/raggedy-graphy-staging/repos/${{ steps.meta.outputs.repo_name }}"
-          RG_URL="${{ secrets.RG_MCP_URL }}"
-          RG_URL="${RG_URL:-http://localhost:8201/mcp}"
+          COLLECTION="${{ steps.checkout.outputs.collection }}"
+          REPO_PATH="/opt/raggedy-graphy-staging/repos/${{ steps.checkout.outputs.repo_name }}"
+          RG_URL="http://localhost:8201/mcp"
 
-          python3 << PYEOF
-          import json, urllib.request, sys, time
+          python3 << 'PYEOF'
+          import json, urllib.request, sys, time, os
 
-          url = "${RG_URL}"
+          url = os.environ.get("RG_URL", "http://localhost:8201/mcp")
+          collection = os.environ.get("COLLECTION", "")
+          repo_path = os.environ.get("REPO_PATH", "")
           hdrs = {"Content-Type": "application/json", "Accept": "application/json, text/event-stream"}
+          sid = ""
 
           def call(method, params, timeout=30):
+              global sid
               body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
-              req = urllib.request.Request(url, data=body, headers=hdrs)
-              return json.loads(urllib.request.urlopen(req, timeout=timeout).read().decode())
+              h = dict(hdrs)
+              if sid:
+                  h["Mcp-Session-Id"] = sid
+              req = urllib.request.Request(url, data=body, headers=h)
+              resp = urllib.request.urlopen(req, timeout=timeout)
+              if not sid:
+                  sid = resp.headers.get("Mcp-Session-Id", "")
+              return json.loads(resp.read().decode())
 
-          # Initialize MCP session
-          r = call("initialize", {
+          # Init
+          call("initialize", {
               "protocolVersion": "2025-03-26", "capabilities": {},
               "clientInfo": {"name": "forgejo-action", "version": "1.0.0"}
           })
-          print(f"✅ MCP session initialized")
+          print("✅ MCP session OK")
 
-          # Delete old collection (ignore errors if it doesn't exist)
+          # Delete old
           try:
-              r = call("tools/call", {"name": "delete_collection",
-                  "arguments": {"collection": "${COLLECTION}", "confirm": True}})
-              content = r.get("result", {}).get("content", [{}])
-              print(f"🗑  Delete collection: {content[0].get('text', 'ok')[:200]}")
+              call("tools/call", {"name": "delete_collection",
+                  "arguments": {"collection": collection, "confirm": True}}, timeout=30)
+              print(f"🗑  Cleared {collection}")
           except Exception as e:
-              print(f"⚠️  Delete collection (may not exist): {e}")
+              print(f"⚠️  Delete (may not exist): {e}")
 
-          # Ingest repo (long timeout — large repos take minutes)
-          print(f"🔄 Ingesting ${REPO_PATH} → ${COLLECTION} ...")
+          # Ingest
+          print(f"🔄 Ingesting {repo_path} → {collection} ...")
           sys.stdout.flush()
-          start = time.time()
+          t0 = time.time()
           r = call("tools/call", {"name": "ingest_repo",
-              "arguments": {"path": "${REPO_PATH}", "collection": "${COLLECTION}"}}, timeout=600)
-          elapsed = time.time() - start
-          content = r.get("result", {}).get("content", [{}])
-          text = content[0].get("text", str(r))[:500]
-          print(f"✅ Ingestion complete in {elapsed:.0f}s: {text}")
+              "arguments": {"path": repo_path, "collection": collection}}, timeout=600)
+          text = r.get("result", {}).get("content", [{}])[0].get("text", str(r))[:500]
+          print(f"✅ Done in {time.time()-t0:.0f}s: {text}")
           PYEOF
+        env:
+          RG_URL: http://localhost:8201/mcp
+          COLLECTION: ${{ steps.checkout.outputs.collection }}
+          REPO_PATH: /opt/raggedy-graphy-staging/repos/${{ steps.checkout.outputs.repo_name }}
 
   mirror-github:
     name: Mirror to GitHub
     runs-on: local
     steps:
-      - name: Checkout code
-        uses: https://code.forgejo.org/actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout (full history)
+        id: checkout
+        run: |
+          WORK="/tmp/rg-mirror-$$"
+          rm -rf "$WORK"
+          git clone --branch ${{ github.ref_name }} \
+            http://forge-ci:${{ secrets.GITHUB_TOKEN }}@10.0.0.3:3000/${{ github.repository }}.git "$WORK"
+          echo "work_dir=$WORK" >> "$GITHUB_OUTPUT"
+          REPO_NAME="${{ github.repository }}"
+          echo "repo_name=${REPO_NAME##*/}" >> "$GITHUB_OUTPUT"
 
       - name: Push to GitHub
-        env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
-          MIRROR_ORG: ${{ secrets.MIRROR_ORG }}
         run: |
-          if [ -z "${MIRROR_TOKEN}" ]; then
-            echo "⚠️  MIRROR_TOKEN not set — skipping GitHub mirror"
+          if [ -z "${{ secrets.MIRROR_TOKEN }}" ]; then
+            echo "⚠️  MIRROR_TOKEN not set — skipping"
             exit 0
           fi
 
-          REPO_NAME="${GITHUB_REPOSITORY##*/}"
-          ORG="${MIRROR_ORG:-bmeyer99}"
-          MIRROR_URL="https://${MIRROR_TOKEN}@github.com/${ORG}/${REPO_NAME}.git"
+          REPO="${{ steps.checkout.outputs.repo_name }}"
+          ORG="${{ secrets.MIRROR_ORG }}"
+          ORG="${ORG:-bmeyer99}"
+          cd "${{ steps.checkout.outputs.work_dir }}"
 
-          echo "🔄 Mirroring to GitHub: ${ORG}/${REPO_NAME}"
-
-          git remote add github "${MIRROR_URL}" 2>/dev/null || git remote set-url github "${MIRROR_URL}"
-          git push github --all --force
-          git push github --tags --force
-
-          echo "✅ Mirrored to github.com/${ORG}/${REPO_NAME}"
+          git remote add github "https://${{ secrets.MIRROR_TOKEN }}@github.com/${ORG}/${REPO}.git"
+          git push github --all --force 2>&1 || echo "⚠️ push --all failed"
+          git push github --tags --force 2>&1 || echo "⚠️ push --tags failed"
+          echo "✅ Mirrored to github.com/${ORG}/${REPO}"
+          rm -rf "${{ steps.checkout.outputs.work_dir }}"
