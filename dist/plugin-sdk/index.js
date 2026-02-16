@@ -1,21 +1,21 @@
-import { $ as setActivePluginRegistry, A as truncateUtf16Safe, B as theme, C as resolveJidToE164, D as sleep, E as shortenHomePath, F as shouldLogVerbose, H as registerLogTransport, I as success, J as normalizeAnyChannelId, K as CHAT_CHANNEL_ORDER, L as warn, M as info, N as logVerbose, O as sliceUtf16Safe, P as setVerbose, Q as requireActivePluginRegistry, R as colorize, T as shortenHomeInString, V as getChildLogger, W as normalizeLogLevel, X as normalizeChatChannelId, Y as normalizeChannelId, Z as getActivePluginRegistry, _ as ensureDir$3, a as logDebug, b as jidToE164, c as logWarn, d as clearActiveProgressLine, f as registerActiveProgressLine, h as clampInt, i as spawnWithFallback, j as danger, k as toWhatsappJid, l as createSubsystemLogger, m as CONFIG_DIR, n as runExec, o as logError, p as unregisterActiveProgressLine, q as getChatChannelMeta, r as formatSpawnError, s as logInfo, t as runCommandWithTimeout, u as defaultRuntime, v as formatTerminalLink, w as resolveUserPath, x as normalizeE164, y as isSelfChatMode, z as isRich } from "./exec-DomWrHJ5.js";
-import { $ as requireOpenAllowFrom, A as logoutWeb, B as IMessageConfigSchema, C as VERSION, D as resolveWhatsAppAuthDir, E as resolveWhatsAppAccount, G as ToolPolicySchema, H as SignalConfigSchema, I as webAuthExists, J as DmPolicySchema, K as BlockStreamingCoalesceSchema, L as WhatsAppConfigSchema, M as readWebSelfId, O as getWebAuthAgeMs, Q as normalizeAllowFrom, R as DiscordConfigSchema, S as resolveAgentMaxConcurrent, T as resolveDefaultWhatsAppAccountId, U as SlackConfigSchema, V as MSTeamsConfigSchema, W as TelegramConfigSchema, X as MarkdownConfigSchema, Y as GroupPolicySchema, Z as MarkdownTableModeSchema, _ as unsetConfigOverride, a as validateConfigObjectWithPlugins, b as setConfigValueAtPath, c as discoverOpenClawPlugins, d as normalizePluginsConfig, et as isSafeExecutableValue, f as resolveEnableState, g as setConfigOverride, h as resetConfigOverrides, i as writeConfigFile, it as resolveTelegramCustomCommands, k as logWebSelfId, m as getConfigOverrides, n as readConfigFileSnapshot, nt as TELEGRAM_COMMAND_NAME_PATTERN, o as validateJsonSchemaValue, p as resolveMemorySlotDecision, q as DmConfigSchema, r as resolveConfigSnapshotHash, rt as normalizeTelegramCommandName, s as loadPluginManifestRegistry, t as loadConfig, tt as parseDurationMs, v as getConfigValueAtPath, w as listWhatsAppAccountIds, x as unsetConfigValueAtPath, y as parseConfigPath, z as GoogleChatConfigSchema } from "./config-Rsf_OUC1.js";
-import { A as normalizeAccountId, D as buildAgentMainSessionKey, E as DEFAULT_MAIN_KEY, F as sanitizeAgentId, I as isAcpSessionKey, L as isSubagentSessionKey, M as normalizeMainKey, N as resolveAgentIdFromSessionKey, O as buildAgentPeerSessionKey, P as resolveThreadSessionKeys, R as parseAgentSessionKey, S as resolveOpenClawPackageRoot, T as DEFAULT_AGENT_ID, b as filterBootstrapFilesForSession, c as resolveDefaultAgentId, f as DEFAULT_AGENT_WORKSPACE_DIR, i as resolveAgentModelFallbacksOverride, j as normalizeAgentId, k as buildGroupHistoryKey, l as resolveSessionAgentId, n as resolveAgentConfig, o as resolveAgentSkillsFilter, p as DEFAULT_BOOTSTRAP_FILENAME, r as resolveAgentDir, s as resolveAgentWorkspaceDir, t as listAgentIds, u as resolveSessionAgentIds, w as DEFAULT_ACCOUNT_ID, x as loadWorkspaceBootstrapFiles, y as ensureAgentWorkspace, z as resolveThreadParentSessionKey } from "./agent-scope-DcQtUwNs.js";
+import { $ as setActivePluginRegistry, A as truncateUtf16Safe, B as theme, C as resolveJidToE164, D as sleep, E as shortenHomePath, F as shouldLogVerbose, H as registerLogTransport, I as success, J as normalizeAnyChannelId, K as CHAT_CHANNEL_ORDER, L as warn, M as info, N as logVerbose, O as sliceUtf16Safe, P as setVerbose, Q as requireActivePluginRegistry, R as colorize, T as shortenHomeInString, V as getChildLogger, W as normalizeLogLevel, X as normalizeChatChannelId, Y as normalizeChannelId, Z as getActivePluginRegistry, _ as ensureDir$3, a as logDebug, b as jidToE164, c as logWarn, d as clearActiveProgressLine, f as registerActiveProgressLine, h as clampInt, i as spawnWithFallback, j as danger, k as toWhatsappJid, l as createSubsystemLogger, m as CONFIG_DIR, n as runExec, o as logError, p as unregisterActiveProgressLine, q as getChatChannelMeta, r as formatSpawnError, s as logInfo, t as runCommandWithTimeout, u as defaultRuntime, v as formatTerminalLink, w as resolveUserPath, x as normalizeE164, y as isSelfChatMode, z as isRich } from "./exec-CjyVHUuE.js";
+import { $ as requireOpenAllowFrom, A as logoutWeb, B as IMessageConfigSchema, C as VERSION, D as resolveWhatsAppAuthDir, E as resolveWhatsAppAccount, G as ToolPolicySchema, H as SignalConfigSchema, I as webAuthExists, J as DmPolicySchema, K as BlockStreamingCoalesceSchema, L as WhatsAppConfigSchema, M as readWebSelfId, O as getWebAuthAgeMs, Q as normalizeAllowFrom, R as DiscordConfigSchema, S as resolveAgentMaxConcurrent, T as resolveDefaultWhatsAppAccountId, U as SlackConfigSchema, V as MSTeamsConfigSchema, W as TelegramConfigSchema, X as MarkdownConfigSchema, Y as GroupPolicySchema, Z as MarkdownTableModeSchema, _ as unsetConfigOverride, a as validateConfigObjectWithPlugins, b as setConfigValueAtPath, c as discoverOpenClawPlugins, d as normalizePluginsConfig, et as isSafeExecutableValue, f as resolveEnableState, g as setConfigOverride, h as resetConfigOverrides, i as writeConfigFile, it as resolveTelegramCustomCommands, k as logWebSelfId, m as getConfigOverrides, n as readConfigFileSnapshot, nt as TELEGRAM_COMMAND_NAME_PATTERN, o as validateJsonSchemaValue, p as resolveMemorySlotDecision, q as DmConfigSchema, r as resolveConfigSnapshotHash, rt as normalizeTelegramCommandName, s as loadPluginManifestRegistry, t as loadConfig, tt as parseDurationMs, v as getConfigValueAtPath, w as listWhatsAppAccountIds, x as unsetConfigValueAtPath, y as parseConfigPath, z as GoogleChatConfigSchema } from "./config-oIMOKgjT.js";
+import { A as normalizeAccountId, D as buildAgentMainSessionKey, E as DEFAULT_MAIN_KEY, F as sanitizeAgentId, I as isAcpSessionKey, L as isSubagentSessionKey, M as normalizeMainKey, N as resolveAgentIdFromSessionKey, O as buildAgentPeerSessionKey, P as resolveThreadSessionKeys, R as parseAgentSessionKey, S as resolveOpenClawPackageRoot, T as DEFAULT_AGENT_ID, b as filterBootstrapFilesForSession, c as resolveDefaultAgentId, f as DEFAULT_AGENT_WORKSPACE_DIR, i as resolveAgentModelFallbacksOverride, j as normalizeAgentId, k as buildGroupHistoryKey, l as resolveSessionAgentId, n as resolveAgentConfig, o as resolveAgentSkillsFilter, p as DEFAULT_BOOTSTRAP_FILENAME, r as resolveAgentDir, s as resolveAgentWorkspaceDir, t as listAgentIds, u as resolveSessionAgentIds, w as DEFAULT_ACCOUNT_ID, x as loadWorkspaceBootstrapFiles, y as ensureAgentWorkspace, z as resolveThreadParentSessionKey } from "./agent-scope-qNPdmst1.js";
 import { a as resolveOAuthDir, i as resolveGatewayPort, n as resolveConfigPath, s as resolveStateDir, t as STATE_DIR } from "./paths-BFxmmTT5.js";
-import { A as chunkMarkdownTextWithMode, B as MediaFetchError, C as markdownToIR, D as wrapFetchWithAbortSignal, E as resolveFetch, F as findFenceSpanAt, G as SILENT_REPLY_TOKEN, H as fetchWithSsrFGuard, I as isSafeFenceBreak, K as isSilentReplyText, L as parseFenceSpans, M as chunkTextWithMode, N as resolveChunkMode, O as chunkByNewline, P as resolveTextChunkLimit, R as loadWebMedia, S as chunkMarkdownIR, T as resolveMarkdownTableMode, U as resolveChannelMediaMaxBytes, V as fetchRemoteMedia, W as HEARTBEAT_TOKEN, _ as sendReadReceiptSignal, a as filterMessagingToolDuplicates, b as signalRpcRequest, c as createReplyToModeFilterForChannel, d as normalizeChannelTargetInput, f as normalizeTargetForProvider, g as sendMessageSignal, h as parseInlineDirectives$1, i as applyReplyThreading, j as chunkText, k as chunkMarkdownText, l as resolveReplyToMode, m as splitMediaFromOutput, n as normalizeReplyPayloadsForDelivery, o as isRenderablePayload, p as parseReplyDirectives, r as applyReplyTagsToPayload, s as shouldSuppressMessagingToolReplies, t as deliverOutboundPayloads, u as buildTargetResolverSignature, v as sendTypingSignal, w as markdownToIRWithMeta, x as streamSignalEvents, y as signalCheck, z as loadWebMediaRaw } from "./deliver-BlquCxhm.js";
-import { $ as sanitizeGoogleTurnOrdering, $n as normalizeWhatsAppTarget, $t as resolveSessionResetPolicy, A as resolveSandboxRuntimeStatus, An as normalizeSlackMessagingTarget, Ar as resolveToolsBySender, At as isGifMedia, B as applySkillEnvOverrides, Bn as resolveDiscordGroupRequireMention, Bt as updateLastRoute, C as isRawApiErrorPayload, Cn as listSlackDirectoryGroupsFromConfig, Cr as listEnabledDiscordAccounts, D as sanitizeUserFacingText, Dn as listWhatsAppDirectoryGroupsFromConfig, Dr as resolveChannelGroupPolicy, Dt as getFileExtension, E as parseImageSizeError, En as listTelegramDirectoryPeersFromConfig, Er as normalizeDiscordToken, Et as extensionForMime, F as buildWorkspaceSkillCommandSpecs, Fn as requireTargetKind, Ft as appendAssistantMessageToSessionTranscript, G as expandPolicyWithPluginGroups, Gn as resolveIMessageGroupToolPolicy, Gt as deliveryContextFromSession, H as resolveSandboxConfigForAgent, Hn as resolveGoogleChatGroupRequireMention, Ht as updateSessionStoreEntry, I as buildWorkspaceSkillSnapshot, In as getChannelDock, J as resolveToolProfilePolicy, Jn as resolveTelegramGroupRequireMention, Jt as normalizeDeliveryContext, K as expandToolGroups, Kn as resolveSlackGroupRequireMention, Kt as deliveryContextKey, L as loadWorkspaceSkillEntries, Ln as listChannelDocks, Lt as loadSessionStore, M as registerBrowserRoutes, Mn as resolveSlackChannelId, Mt as MAX_IMAGE_BYTES, N as resolveBrowserConfig, Nn as buildMessagingTarget, O as ensureSandboxWorkspaceForSession, On as listWhatsAppDirectoryPeersFromConfig, Or as resolveChannelGroupRequireMention, Ot as imageMimeFromFormat, P as resolveProfile, Pn as ensureTargetId, Pt as mediaKindFromMime, Q as resolveBootstrapMaxChars, Qn as isWhatsAppGroupJid, Qt as resolveChannelResetConfig, R as resolveSkillsPromptForRun, Rn as resolveBlueBubblesGroupRequireMention, Rt as readSessionUpdatedAt, S as isRateLimitAssistantError, Sn as listDiscordDirectoryPeersFromConfig, Sr as listDiscordAccountIds, T as parseImageDimensionError, Tn as listTelegramDirectoryGroupsFromConfig, Tr as resolveDiscordAccount, Tt as detectMime, U as buildPluginToolGroups, Un as resolveGoogleChatGroupToolPolicy, Ut as isCacheEnabled, V as applySkillEnvOverridesFromSnapshot, Vn as resolveDiscordGroupToolPolicy, Vt as updateSessionStore, W as collectExplicitAllowlist, Wn as resolveIMessageGroupRequireMention, Wt as resolveCacheTtlMs$1, X as buildBootstrapContextFiles, Xn as resolveWhatsAppGroupRequireMention, Xt as resolveSessionKey$1, Y as stripPluginOnlyAllowlist, Yn as resolveTelegramGroupToolPolicy, Yt as normalizeSessionDeliveryFields, Z as ensureSessionHeader, Zn as resolveWhatsAppGroupToolPolicy, Zt as evaluateSessionFreshness, _ as isCompactionFailureError, _n as GATEWAY_CLIENT_NAMES, _r as resolveDefaultSignalAccountId, a as isMessagingToolDuplicateNormalized, an as resolveConversationLabel, ar as listBindings, at as normalizeThinkLevel, b as isFailoverErrorMessage, bn as normalizeChannelId$1, br as resolveDefaultIMessageAccountId, c as downgradeOpenAIReasoningBlocks, cn as isDeliverableMessageChannel, cr as listSlackAccountIds, ct as resolveResponseUsageMode, d as classifyFailoverReason, dn as listDeliverableMessageChannels, dr as resolveSlackReplyToMode, dt as getMediaDir, en as resolveSessionResetType, er as listEnabledTelegramAccounts, et as formatThinkingLevels, f as formatAssistantErrorText, fn as normalizeMessageChannel, fr as resolveSlackAppToken, ft as saveMediaBuffer, g as isCloudCodeAssistFormatError, gn as GATEWAY_CLIENT_MODES, gr as listSignalAccountIds, h as isAuthAssistantError, hn as GATEWAY_CLIENT_IDS, hr as listEnabledSignalAccounts, in as deriveSessionMetaPatch, ir as resolveTelegramToken, it as normalizeReasoningLevel, j as createBrowserRouteContext, jn as parseSlackTarget, jt as kindFromMime, k as resolveSandboxContext, kn as looksLikeSlackTargetId, kr as resolveChannelGroupToolsPolicy, kt as isAudioFileName, l as isAntigravityClaude, ln as isInternalMessageChannel, lr as resolveDefaultSlackAccountId, lt as supportsXHighThinking, m as getApiErrorPayloadFingerprint, mn as resolveMessageChannel, mr as normalizeChatType, n as validateGeminiTurns, nn as DEFAULT_RESET_TRIGGERS, nr as resolveDefaultTelegramAccountId, nt as listThinkingLevels, o as normalizeTextForComparison, on as resolveGroupSessionKey, or as buildSlackThreadingToolContext, ot as normalizeUsageDisplay, p as formatRawAssistantErrorForUi, pn as resolveGatewayMessageChannel, pr as resolveSlackBotToken, pt as SsrFBlockedError, q as normalizeToolName, qn as resolveSlackGroupToolPolicy, qt as mergeDeliveryContext, r as pickFallbackThinkingLevel, rn as resolveMainSessionKey, rr as resolveTelegramAccount, rt as normalizeElevatedLevel, s as sanitizeSessionMessagesImages, sn as INTERNAL_MESSAGE_CHANNEL, sr as listEnabledSlackAccounts, st as normalizeVerboseLevel, t as validateAnthropicTurns, tn as resolveThreadFlag, tr as listTelegramAccountIds, tt as formatXHighModelHint, u as isGoogleModelApi, un as isMarkdownCapableMessageChannel, ur as resolveSlackAccount, ut as extractOriginalFilename, v as isContextOverflowError, vn as getChannelPlugin, vr as resolveSignalAccount, vt as sanitizeImageBlocks, w as isTimeoutErrorMessage, wn as listSlackDirectoryPeersFromConfig, wr as resolveDefaultDiscordAccountId, wt as resizeToJpeg, x as isLikelyContextOverflowError, xn as listDiscordDirectoryGroupsFromConfig, xr as resolveIMessageAccount, xt as getImageMetadata, y as isFailoverAssistantError, yn as listChannelPlugins, yr as listIMessageAccountIds, yt as sanitizeToolResultImages, z as resolvePluginSkillDirs, zn as resolveBlueBubblesGroupToolPolicy, zt as recordSessionMetaFromInbound } from "./pi-embedded-helpers-fGmIUP65.js";
-import { A as listProfilesForProvider, B as getShellPathFromLoginShell, D as resolveApiKeyForProfile, E as markAuthProfileUsed, F as resolveOpenClawAgentDir, G as isTruthyEnvValue, H as resolveShellEnvFallbackTimeoutMs, I as resolveAuthProfileDisplayLabel, K as parseBooleanValue$1, L as DEFAULT_CONTEXT_TOKENS, M as ensureAuthProfileStore, P as resolveAuthStorePathForDisplay, R as DEFAULT_MODEL, S as resolveAuthProfileOrder, T as markAuthProfileFailure, _ as getCustomProviderApiKey, a as normalizeProviderId, b as resolveEnvApiKey, c as resolveDefaultModelForAgent, d as normalizeGoogleModelId, g as getApiKeyForModel, i as modelKey, j as markAuthProfileGood, l as resolveModelRefFromString, n as buildModelAliasIndex, o as parseModelRef, r as isCliProvider, s as resolveConfiguredModelRef, t as buildAllowedModelSet, u as resolveThinkingDefault, v as requireApiKey, w as isProfileInCooldown, x as resolveModelAuthMode, y as resolveApiKeyForProvider, z as DEFAULT_PROVIDER } from "./model-selection-a72bHFmX.js";
+import { A as chunkMarkdownTextWithMode, B as MediaFetchError, C as markdownToIR, D as wrapFetchWithAbortSignal, E as resolveFetch, F as findFenceSpanAt, G as SILENT_REPLY_TOKEN, H as fetchWithSsrFGuard, I as isSafeFenceBreak, K as isSilentReplyText, L as parseFenceSpans, M as chunkTextWithMode, N as resolveChunkMode, O as chunkByNewline, P as resolveTextChunkLimit, R as loadWebMedia, S as chunkMarkdownIR, T as resolveMarkdownTableMode, U as resolveChannelMediaMaxBytes, V as fetchRemoteMedia, W as HEARTBEAT_TOKEN, _ as sendReadReceiptSignal, a as filterMessagingToolDuplicates, b as signalRpcRequest, c as createReplyToModeFilterForChannel, d as normalizeChannelTargetInput, f as normalizeTargetForProvider, g as sendMessageSignal, h as parseInlineDirectives$1, i as applyReplyThreading, j as chunkText, k as chunkMarkdownText, l as resolveReplyToMode, m as splitMediaFromOutput, n as normalizeReplyPayloadsForDelivery, o as isRenderablePayload, p as parseReplyDirectives, r as applyReplyTagsToPayload, s as shouldSuppressMessagingToolReplies, t as deliverOutboundPayloads, u as buildTargetResolverSignature, v as sendTypingSignal, w as markdownToIRWithMeta, x as streamSignalEvents, y as signalCheck, z as loadWebMediaRaw } from "./deliver-CBS_TrY7.js";
+import { $ as sanitizeGoogleTurnOrdering, $n as normalizeWhatsAppTarget, $t as resolveSessionResetPolicy, A as resolveSandboxRuntimeStatus, An as normalizeSlackMessagingTarget, Ar as resolveToolsBySender, At as isGifMedia, B as applySkillEnvOverrides, Bn as resolveDiscordGroupRequireMention, Bt as updateLastRoute, C as isRawApiErrorPayload, Cn as listSlackDirectoryGroupsFromConfig, Cr as listEnabledDiscordAccounts, D as sanitizeUserFacingText, Dn as listWhatsAppDirectoryGroupsFromConfig, Dr as resolveChannelGroupPolicy, Dt as getFileExtension, E as parseImageSizeError, En as listTelegramDirectoryPeersFromConfig, Er as normalizeDiscordToken, Et as extensionForMime, F as buildWorkspaceSkillCommandSpecs, Fn as requireTargetKind, Ft as appendAssistantMessageToSessionTranscript, G as expandPolicyWithPluginGroups, Gn as resolveIMessageGroupToolPolicy, Gt as deliveryContextFromSession, H as resolveSandboxConfigForAgent, Hn as resolveGoogleChatGroupRequireMention, Ht as updateSessionStoreEntry, I as buildWorkspaceSkillSnapshot, In as getChannelDock, J as resolveToolProfilePolicy, Jn as resolveTelegramGroupRequireMention, Jt as normalizeDeliveryContext, K as expandToolGroups, Kn as resolveSlackGroupRequireMention, Kt as deliveryContextKey, L as loadWorkspaceSkillEntries, Ln as listChannelDocks, Lt as loadSessionStore, M as registerBrowserRoutes, Mn as resolveSlackChannelId, Mt as MAX_IMAGE_BYTES, N as resolveBrowserConfig, Nn as buildMessagingTarget, O as ensureSandboxWorkspaceForSession, On as listWhatsAppDirectoryPeersFromConfig, Or as resolveChannelGroupRequireMention, Ot as imageMimeFromFormat, P as resolveProfile, Pn as ensureTargetId, Pt as mediaKindFromMime, Q as resolveBootstrapMaxChars, Qn as isWhatsAppGroupJid, Qt as resolveChannelResetConfig, R as resolveSkillsPromptForRun, Rn as resolveBlueBubblesGroupRequireMention, Rt as readSessionUpdatedAt, S as isRateLimitAssistantError, Sn as listDiscordDirectoryPeersFromConfig, Sr as listDiscordAccountIds, T as parseImageDimensionError, Tn as listTelegramDirectoryGroupsFromConfig, Tr as resolveDiscordAccount, Tt as detectMime, U as buildPluginToolGroups, Un as resolveGoogleChatGroupToolPolicy, Ut as isCacheEnabled, V as applySkillEnvOverridesFromSnapshot, Vn as resolveDiscordGroupToolPolicy, Vt as updateSessionStore, W as collectExplicitAllowlist, Wn as resolveIMessageGroupRequireMention, Wt as resolveCacheTtlMs$1, X as buildBootstrapContextFiles, Xn as resolveWhatsAppGroupRequireMention, Xt as resolveSessionKey$1, Y as stripPluginOnlyAllowlist, Yn as resolveTelegramGroupToolPolicy, Yt as normalizeSessionDeliveryFields, Z as ensureSessionHeader, Zn as resolveWhatsAppGroupToolPolicy, Zt as evaluateSessionFreshness, _ as isCompactionFailureError, _n as GATEWAY_CLIENT_NAMES, _r as resolveDefaultSignalAccountId, a as isMessagingToolDuplicateNormalized, an as resolveConversationLabel, ar as listBindings, at as normalizeThinkLevel, b as isFailoverErrorMessage, bn as normalizeChannelId$1, br as resolveDefaultIMessageAccountId, c as downgradeOpenAIReasoningBlocks, cn as isDeliverableMessageChannel, cr as listSlackAccountIds, ct as resolveResponseUsageMode, d as classifyFailoverReason, dn as listDeliverableMessageChannels, dr as resolveSlackReplyToMode, dt as getMediaDir, en as resolveSessionResetType, er as listEnabledTelegramAccounts, et as formatThinkingLevels, f as formatAssistantErrorText, fn as normalizeMessageChannel, fr as resolveSlackAppToken, ft as saveMediaBuffer, g as isCloudCodeAssistFormatError, gn as GATEWAY_CLIENT_MODES, gr as listSignalAccountIds, h as isAuthAssistantError, hn as GATEWAY_CLIENT_IDS, hr as listEnabledSignalAccounts, in as deriveSessionMetaPatch, ir as resolveTelegramToken, it as normalizeReasoningLevel, j as createBrowserRouteContext, jn as parseSlackTarget, jt as kindFromMime, k as resolveSandboxContext, kn as looksLikeSlackTargetId, kr as resolveChannelGroupToolsPolicy, kt as isAudioFileName, l as isAntigravityClaude, ln as isInternalMessageChannel, lr as resolveDefaultSlackAccountId, lt as supportsXHighThinking, m as getApiErrorPayloadFingerprint, mn as resolveMessageChannel, mr as normalizeChatType, n as validateGeminiTurns, nn as DEFAULT_RESET_TRIGGERS, nr as resolveDefaultTelegramAccountId, nt as listThinkingLevels, o as normalizeTextForComparison, on as resolveGroupSessionKey, or as buildSlackThreadingToolContext, ot as normalizeUsageDisplay, p as formatRawAssistantErrorForUi, pn as resolveGatewayMessageChannel, pr as resolveSlackBotToken, pt as SsrFBlockedError, q as normalizeToolName, qn as resolveSlackGroupToolPolicy, qt as mergeDeliveryContext, r as pickFallbackThinkingLevel, rn as resolveMainSessionKey, rr as resolveTelegramAccount, rt as normalizeElevatedLevel, s as sanitizeSessionMessagesImages, sn as INTERNAL_MESSAGE_CHANNEL, sr as listEnabledSlackAccounts, st as normalizeVerboseLevel, t as validateAnthropicTurns, tn as resolveThreadFlag, tr as listTelegramAccountIds, tt as formatXHighModelHint, u as isGoogleModelApi, un as isMarkdownCapableMessageChannel, ur as resolveSlackAccount, ut as extractOriginalFilename, v as isContextOverflowError, vn as getChannelPlugin, vr as resolveSignalAccount, vt as sanitizeImageBlocks, w as isTimeoutErrorMessage, wn as listSlackDirectoryPeersFromConfig, wr as resolveDefaultDiscordAccountId, wt as resizeToJpeg, x as isLikelyContextOverflowError, xn as listDiscordDirectoryGroupsFromConfig, xr as resolveIMessageAccount, xt as getImageMetadata, y as isFailoverAssistantError, yn as listChannelPlugins, yr as listIMessageAccountIds, yt as sanitizeToolResultImages, z as resolvePluginSkillDirs, zn as resolveBlueBubblesGroupToolPolicy, zt as recordSessionMetaFromInbound } from "./pi-embedded-helpers-DY5i5CUk.js";
+import { A as listProfilesForProvider, B as getShellPathFromLoginShell, D as resolveApiKeyForProfile, E as markAuthProfileUsed, F as resolveOpenClawAgentDir, G as isTruthyEnvValue, H as resolveShellEnvFallbackTimeoutMs, I as resolveAuthProfileDisplayLabel, K as parseBooleanValue$1, L as DEFAULT_CONTEXT_TOKENS, M as ensureAuthProfileStore, P as resolveAuthStorePathForDisplay, R as DEFAULT_MODEL, S as resolveAuthProfileOrder, T as markAuthProfileFailure, _ as getCustomProviderApiKey, a as normalizeProviderId, b as resolveEnvApiKey, c as resolveDefaultModelForAgent, d as normalizeGoogleModelId, g as getApiKeyForModel, i as modelKey, j as markAuthProfileGood, l as resolveModelRefFromString, n as buildModelAliasIndex, o as parseModelRef, r as isCliProvider, s as resolveConfiguredModelRef, t as buildAllowedModelSet, u as resolveThinkingDefault, v as requireApiKey, w as isProfileInCooldown, x as resolveModelAuthMode, y as resolveApiKeyForProvider, z as DEFAULT_PROVIDER } from "./model-selection-d9ikTAJM.js";
 import { n as resolveCliName, t as formatCliCommand } from "./command-format-CFzL448l.js";
 import { a as saveJsonFile, i as loadJsonFile } from "./github-copilot-token-BoPqI-5_.js";
-import { a as resolveStorePath, i as resolveSessionTranscriptsDirForAgent, n as resolveSessionFilePath, r as resolveSessionTranscriptPath } from "./paths-DUuq6MRi.js";
+import { a as resolveStorePath, i as resolveSessionTranscriptsDirForAgent, n as resolveSessionFilePath, r as resolveSessionTranscriptPath } from "./paths-Bkjq_KcG.js";
 import { t as emitSessionTranscriptUpdate } from "./transcript-events-DOI14YeV.js";
-import { D as formatErrorMessage$1, E as extractErrorCode, O as formatUncaughtError, T as rawDataToString, h as ensureChromeExtensionRelayServer, y as DEFAULT_AI_SNAPSHOT_MAX_CHARS } from "./chrome-Q5MCPsAl.js";
-import { i as retryAsync, n as resolveMemorySearchConfig, r as resolveRetryConfig } from "./manager-ChvT56Oo.js";
-import { _ as ensureOpenClawModelsJson, a as resolveProviderVisionModelFromConfig, c as extractThinkingFromTaggedStream, d as inferToolMetaFromArgs, f as promoteThinkingTagsToBlocks, g as resolveToolDisplay, h as stripThinkingTagsFromText, i as decodeDataUrl, l as extractThinkingFromTaggedText, m as stripMinimaxToolCallXml, n as coerceImageAssistantText, o as extractAssistantText$1, p as stripDowngradedToolCallText, r as coerceImageModelConfig, s as extractAssistantThinking, t as describeImageWithModel, u as formatReasoningMessage, v as minimaxUnderstandImage } from "./image-eYi3dzRg.js";
+import { D as formatErrorMessage$1, E as extractErrorCode, O as formatUncaughtError, T as rawDataToString, h as ensureChromeExtensionRelayServer, y as DEFAULT_AI_SNAPSHOT_MAX_CHARS } from "./chrome-DMuEXuKT.js";
+import { i as retryAsync, n as resolveMemorySearchConfig, r as resolveRetryConfig } from "./manager-Cl43Sf0t.js";
+import { _ as ensureOpenClawModelsJson, a as resolveProviderVisionModelFromConfig, c as extractThinkingFromTaggedStream, d as inferToolMetaFromArgs, f as promoteThinkingTagsToBlocks, g as resolveToolDisplay, h as stripThinkingTagsFromText, i as decodeDataUrl, l as extractThinkingFromTaggedText, m as stripMinimaxToolCallXml, n as coerceImageAssistantText, o as extractAssistantText$1, p as stripDowngradedToolCallText, r as coerceImageModelConfig, s as extractAssistantThinking, t as describeImageWithModel, u as formatReasoningMessage, v as minimaxUnderstandImage } from "./image-suEID2rU.js";
 import { i as discoverModels, r as discoverAuthStorage } from "./pi-model-discovery-CLgDNnGq.js";
 import { t as redactSensitiveText } from "./redact-wH73ib3-.js";
 import { c as listMemoryFiles, l as normalizeExtraMemoryPaths } from "./sqlite-CqVsQPIl.js";
-import { a as getStatusCode$1, i as formatError$1, n as waitForWebLogin, o as waitForWaConnection, r as createWaSocket, t as startWebLoginWithQr } from "./login-qr-BShd-M6g.js";
+import { a as getStatusCode$1, i as formatError$1, n as waitForWebLogin, o as waitForWaConnection, r as createWaSocket, t as startWebLoginWithQr } from "./login-qr-jcX3TXSQ.js";
 import { createRequire } from "node:module";
 import { z } from "zod";
 import * as os$1 from "node:os";
@@ -516,7 +516,7 @@ function stripMentions(text, ctx, cfg, agentId) {
 
 //#endregion
 //#region src/auto-reply/reply/history.ts
-const HISTORY_CONTEXT_MARKER = "[Chat messages since your last reply - for context]";
+const HISTORY_CONTEXT_MARKER = "[Chat messages since your last reply - for context]\n[⚠️ CONVERSATION HISTORY MAY CONTAIN OUTDATED INFORMATION. When conversation history conflicts with Knowledge, Memories, or other authoritative context sections in the system prompt, ALWAYS prefer those authoritative sources.]";
 const DEFAULT_GROUP_HISTORY_LIMIT = 50;
 /** Maximum number of group history keys to retain (LRU eviction when exceeded). */
 const MAX_HISTORY_KEYS = 1e3;
@@ -11615,7 +11615,7 @@ async function createModelSelectionState(params) {
 		}
 	}
 	if (sessionEntry && sessionStore && sessionKey && sessionEntry.authProfileOverride) {
-		const { ensureAuthProfileStore } = await import("./auth-profiles-C_hdMfmx.js");
+		const { ensureAuthProfileStore } = await import("./auth-profiles-D_uMO9Be.js");
 		const profile = ensureAuthProfileStore(void 0, { allowKeychainPrompt: false }).profiles[sessionEntry.authProfileOverride];
 		const providerKey = normalizeProviderId(provider);
 		if (!profile || normalizeProviderId(profile.provider) !== providerKey) await clearSessionAuthProfileOverride({
@@ -15151,7 +15151,7 @@ async function getMemorySearchManager(params) {
 		const cached = QMD_MANAGER_CACHE.get(cacheKey);
 		if (cached) return { manager: cached };
 		try {
-			const { QmdMemoryManager } = await import("./qmd-manager-BpaPtck1.js");
+			const { QmdMemoryManager } = await import("./qmd-manager-DvkA01DP.js");
 			const primary = await QmdMemoryManager.create({
 				cfg: params.cfg,
 				agentId: params.agentId,
@@ -15161,7 +15161,7 @@ async function getMemorySearchManager(params) {
 				const wrapper = new FallbackMemoryManager({
 					primary,
 					fallbackFactory: async () => {
-						const { MemoryIndexManager } = await import("./manager-BGDeLq4F.js");
+						const { MemoryIndexManager } = await import("./manager-Be5qbYYO.js");
 						return await MemoryIndexManager.get(params);
 					}
 				}, () => QMD_MANAGER_CACHE.delete(cacheKey));
@@ -15174,7 +15174,7 @@ async function getMemorySearchManager(params) {
 		}
 	}
 	try {
-		const { MemoryIndexManager } = await import("./manager-BGDeLq4F.js");
+		const { MemoryIndexManager } = await import("./manager-Be5qbYYO.js");
 		return { manager: await MemoryIndexManager.get(params) };
 	} catch (err) {
 		return {
@@ -15555,6 +15555,18 @@ function markdownToSlackMrkdwnChunks(markdown, limit, options = {}) {
 //#endregion
 //#region src/slack/send.ts
 const SLACK_TEXT_LIMIT = 4e3;
+const _botUserIdCache = /* @__PURE__ */ new Map();
+async function resolveBotUserId$1(client, token) {
+	const cached = _botUserIdCache.get(token);
+	if (cached) return cached;
+	try {
+		const uid = (await client.auth.test()).user_id;
+		if (uid) _botUserIdCache.set(token, uid);
+		return uid;
+	} catch {
+		return;
+	}
+}
 function resolveToken$4(params) {
 	const explicit = resolveSlackBotToken(params.explicit);
 	if (explicit) return explicit;
@@ -15645,6 +15657,22 @@ async function sendMessageSlack(to, message, opts = {}) {
 		text: chunk,
 		thread_ts: opts.threadTs
 	})).ts ?? lastMessageId;
+	try {
+		const botUserId = await resolveBotUserId$1(client, token);
+		fetch("http://127.0.0.1:18795/ingest", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ event: {
+				type: "message",
+				subtype: "bot_message",
+				user: botUserId,
+				text: trimmedMessage,
+				ts: lastMessageId,
+				channel: channelId,
+				thread_ts: opts.threadTs
+			} })
+		}).catch(() => {});
+	} catch {}
 	return {
 		messageId: lastMessageId || "unknown",
 		channelId
@@ -19957,7 +19985,7 @@ async function routeReply(params) {
 	const resolvedReplyToId = replyToId ?? (channelId === "slack" && threadId != null && threadId !== "" ? String(threadId) : void 0);
 	const resolvedThreadId = channelId === "slack" ? null : threadId ?? null;
 	try {
-		const { deliverOutboundPayloads } = await import("./deliver-BMxpArQz.js");
+		const { deliverOutboundPayloads } = await import("./deliver-lIBbYbqM.js");
 		return {
 			ok: true,
 			messageId: (await deliverOutboundPayloads({
@@ -23291,7 +23319,7 @@ async function describeStickerImage(params) {
 	logVerbose(`telegram: describing sticker with ${provider}/${model}`);
 	try {
 		const buffer = await fs$1.readFile(imagePath);
-		const { describeImageWithModel } = await import("./image-DOFW0E7L.js");
+		const { describeImageWithModel } = await import("./image-5vPO_I57.js");
 		return (await describeImageWithModel({
 			buffer,
 			fileName: "sticker.webp",
@@ -23648,7 +23676,7 @@ function createWhatsAppLoginTool() {
 			force: Type.Optional(Type.Boolean())
 		}),
 		execute: async (_toolCallId, args) => {
-			const { startWebLoginWithQr, waitForWebLogin } = await import("./login-qr-Czrwaaha.js");
+			const { startWebLoginWithQr, waitForWebLogin } = await import("./login-qr-DBIOIn_G.js");
 			if ((args?.action ?? "start") === "wait") {
 				const result = await waitForWebLogin({ timeoutMs: typeof args.timeoutMs === "number" ? args.timeoutMs : void 0 });
 				return {
@@ -51994,7 +52022,7 @@ const execAsync = promisify(exec);
 async function fetchMcpContext(config, params) {
 	if (!config?.enabled || !config.mcpServer) return null;
 	const { mcpServer, mcpTool = "build_agent_context", timeoutMs = 1e4, budgetTokens = 6e4 } = config;
-	const { messageText, recentMessages, senderName, threadId, channelId } = params;
+	const { messageText, recentMessages, senderName, threadId, channelId, agentId } = params;
 	if (messageText.trim().length < 10) return null;
 	try {
 		const startTime = Date.now();
@@ -52002,6 +52030,7 @@ async function fetchMcpContext(config, params) {
 		if (senderName) args.push(`sender_name="${escapeForShell(senderName)}"`);
 		if (threadId) args.push(`thread_ts=str:${threadId}`);
 		if (channelId) args.push(`channel_id="${channelId}"`);
+		if (agentId) args.push(`agent_id="${escapeForShell(agentId)}"`);
 		if (budgetTokens) args.push(`context_budget_tokens=${budgetTokens}`);
 		const command = `mcporter call ${mcpServer}.${mcpTool} ${args.join(" ")}`;
 		logVerbose(`mcp-context-hook: calling ${mcpServer}.${mcpTool}`);
@@ -52031,9 +52060,10 @@ async function fetchMcpContext(config, params) {
 /**
 * Build system prompt section from context hook result.
 */
+const CONTEXT_AUTHORITY_PREFIX = "⚠️ AUTHORITATIVE CONTEXT (from knowledge system — takes precedence over conversation history below):\nWhen any information here conflicts with conversation history, ALWAYS use this section as the source of truth.\n";
 function buildContextHookPrompt(result) {
 	if (!result || !result.contextBlock?.trim()) return "";
-	return result.contextBlock;
+	return CONTEXT_AUTHORITY_PREFIX + result.contextBlock;
 }
 /**
 * Extract the last N messages from a combined history body.
@@ -52191,7 +52221,10 @@ function createSessionsSpawnTool(opts) {
 			let ragContext = "";
 			const contextHookConfig = cfg.agents?.defaults?.contextHook;
 			if (contextHookConfig?.enabled && task.trim().length >= 10) try {
-				ragContext = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, { messageText: task }));
+				ragContext = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, {
+					messageText: task,
+					agentId: targetAgentId
+				}));
 				if (ragContext) logVerbose(`sessions-spawn: injected ${ragContext.length} chars of context for subagent`);
 			} catch (error) {
 				logVerbose(`sessions-spawn: context hook failed (non-fatal): ${String(error)}`);
@@ -63892,6 +63925,144 @@ async function handleInlineActions(params) {
 }
 
 //#endregion
+//#region src/observability/ai-turn-logger.ts
+/**
+* AI Turn Logger — writes turn lifecycle events to Google Cloud Logging.
+*
+* Uses direct HTTP to the GCL REST API with GCE metadata server auth.
+* No npm dependencies beyond Node builtins — avoids pnpm workspace conflicts.
+*
+* Log name: projects/{PROJECT}/logs/ai_turns
+* Resource: global (same as RG's ai_turn_logger.py)
+*
+* Falls back to logVerbose if GCL write fails (graceful degradation).
+*/
+const LOG_NAME = `projects/${process.env.GCP_PROJECT ?? process.env.GCLOUD_PROJECT ?? "jeeves-486102"}/logs/ai_turns`;
+const GCL_ENTRIES_URL = `https://logging.googleapis.com/v2/entries:write`;
+const METADATA_TOKEN_URL = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
+let cachedToken = null;
+/**
+* Generate a new trace ID for a turn.
+*/
+function generateTraceId() {
+	return crypto.randomUUID();
+}
+/**
+* Get an access token from the GCE metadata server.
+* Caches the token and refreshes before expiry.
+*/
+async function getAccessToken() {
+	const now = Date.now();
+	if (cachedToken && now < cachedToken.expiresAt) return cachedToken.token;
+	try {
+		const resp = await fetch(METADATA_TOKEN_URL, {
+			headers: { "Metadata-Flavor": "Google" },
+			signal: AbortSignal.timeout(3e3)
+		});
+		if (!resp.ok) {
+			logVerbose(`ai-turn-logger: metadata token fetch failed: ${resp.status}`);
+			return null;
+		}
+		const data = await resp.json();
+		cachedToken = {
+			token: data.access_token,
+			expiresAt: now + (data.expires_in - 600) * 1e3
+		};
+		return cachedToken.token;
+	} catch (err) {
+		logVerbose(`ai-turn-logger: metadata token error: ${String(err)}`);
+		return null;
+	}
+}
+/**
+* Write a single log entry to GCL. Fire-and-forget (non-blocking).
+*/
+async function writeToGcl(event) {
+	const token = await getAccessToken();
+	if (!token) {
+		logVerbose(`ai-turn-logger: no token, logging locally: ${JSON.stringify(event)}`);
+		return;
+	}
+	try {
+		const body = JSON.stringify({
+			logName: LOG_NAME,
+			resource: { type: "global" },
+			entries: [{
+				jsonPayload: event,
+				severity: event.eventPhase === "error" ? "ERROR" : "INFO",
+				timestamp: event.timestamp
+			}]
+		});
+		const resp = await fetch(GCL_ENTRIES_URL, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json"
+			},
+			body,
+			signal: AbortSignal.timeout(5e3)
+		});
+		if (!resp.ok) {
+			const text = await resp.text().catch(() => "");
+			logVerbose(`ai-turn-logger: GCL write failed ${resp.status}: ${text.substring(0, 200)}`);
+		}
+	} catch (err) {
+		logVerbose(`ai-turn-logger: GCL write error: ${String(err)}`);
+	}
+}
+/**
+* Build the base fields for an event.
+*/
+function makeBase(traceId, phase, params) {
+	return {
+		traceId,
+		timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+		eventPhase: phase,
+		source: "openclaw",
+		...params
+	};
+}
+/**
+* Log the start of a turn.
+*/
+function logAiTurnStart(traceId, ids) {
+	writeToGcl({
+		...makeBase(traceId, "start", ids),
+		eventPhase: "start"
+	}).catch(() => {});
+}
+/**
+* Log context building completion.
+*/
+function logAiTurnContext(traceId, ids, context) {
+	writeToGcl({
+		...makeBase(traceId, "context", ids),
+		eventPhase: "context",
+		context
+	}).catch(() => {});
+}
+/**
+* Log LLM call completion.
+*/
+function logAiTurnLlm(traceId, ids, llm) {
+	writeToGcl({
+		...makeBase(traceId, "llm", ids),
+		eventPhase: "llm",
+		llm
+	}).catch(() => {});
+}
+/**
+* Log successful turn completion.
+*/
+function logAiTurnEnd(traceId, ids, turn) {
+	writeToGcl({
+		...makeBase(traceId, "end", ids),
+		eventPhase: "end",
+		turn
+	}).catch(() => {});
+}
+
+//#endregion
 //#region src/auto-reply/media-note.ts
 function formatMediaAttachedLine(params) {
 	const prefix = typeof params.index === "number" && typeof params.total === "number" ? `[media attached ${params.index}/${params.total}: ` : "[media attached: ";
@@ -65985,7 +66156,7 @@ function createFollowupRunner(params) {
 //#region src/auto-reply/reply/agent-runner.ts
 const BLOCK_REPLY_SEND_TIMEOUT_MS = 15e3;
 async function runReplyAgent(params) {
-	const { commandBody, followupRun, queueKey, resolvedQueue, shouldSteer, shouldFollowup, isActive, isStreaming, opts, typing, sessionEntry, sessionStore, sessionKey, storePath, defaultModel, agentCfgContextTokens, resolvedVerboseLevel, isNewSession, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, sessionCtx, shouldInjectGroupIntro, typingMode } = params;
+	const { commandBody, followupRun, queueKey, resolvedQueue, shouldSteer, shouldFollowup, isActive, isStreaming, opts, typing, sessionEntry, sessionStore, sessionKey, storePath, defaultModel, agentCfgContextTokens, resolvedVerboseLevel, isNewSession, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, sessionCtx, shouldInjectGroupIntro, typingMode, traceId, turnIds } = params;
 	let activeSessionEntry = sessionEntry;
 	const activeSessionStore = sessionStore;
 	let activeIsNewSession = isNewSession;
@@ -66006,6 +66177,7 @@ async function runReplyAgent(params) {
 		resolvedVerboseLevel
 	});
 	const pendingToolTasks = /* @__PURE__ */ new Set();
+	let toolCallCount = 0;
 	const blockReplyTimeoutMs = opts?.blockReplyTimeoutMs ?? BLOCK_REPLY_SEND_TIMEOUT_MS;
 	const replyToChannel = sessionCtx.OriginatingChannel ?? (sessionCtx.Surface ?? sessionCtx.Provider)?.toLowerCase();
 	const replyToMode = resolveReplyToMode(followupRun.run.config, replyToChannel, sessionCtx.AccountId, sessionCtx.ChatType);
@@ -66150,7 +66322,14 @@ async function runReplyAgent(params) {
 			storePath,
 			resolvedVerboseLevel
 		});
-		if (runOutcome.kind === "final") return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
+		if (runOutcome.kind === "final") {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "aborted"
+			});
+			return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
+		}
 		const { runResult, fallbackProvider, fallbackModel, directlySentBlockKeys } = runOutcome;
 		let { didLogHeartbeatStrip, autoCompactionCompleted } = runOutcome;
 		if (shouldInjectGroupIntro && activeSessionEntry && activeSessionStore && sessionKey && activeSessionEntry.groupActivationNeedsSystemIntro) {
@@ -66172,6 +66351,7 @@ async function runReplyAgent(params) {
 			await blockReplyPipeline.flush({ force: true });
 			blockReplyPipeline.stop();
 		}
+		toolCallCount = pendingToolTasks.size;
 		if (pendingToolTasks.size > 0) await Promise.allSettled(pendingToolTasks);
 		const usage = runResult.meta.agentMeta?.usage;
 		const modelUsed = runResult.meta.agentMeta?.model ?? fallbackModel ?? defaultModel;
@@ -66188,7 +66368,14 @@ async function runReplyAgent(params) {
 			systemPromptReport: runResult.meta.systemPromptReport,
 			cliSessionId
 		});
-		if (payloadArray.length === 0) return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		if (payloadArray.length === 0) {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "empty"
+			});
+			return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		}
 		const payloadResult = buildReplyPayloads({
 			payloads: payloadArray,
 			isHeartbeat,
@@ -66207,7 +66394,14 @@ async function runReplyAgent(params) {
 		});
 		const { replyPayloads } = payloadResult;
 		didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
-		if (replyPayloads.length === 0) return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		if (replyPayloads.length === 0) {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "empty"
+			});
+			return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		}
 		await signalTypingIfNeeded(replyPayloads, typingSignals);
 		if (isDiagnosticsEnabled(cfg) && hasNonzeroUsage(usage)) {
 			const input = usage.input ?? 0;
@@ -66245,6 +66439,37 @@ async function runReplyAgent(params) {
 				},
 				costUsd,
 				durationMs: Date.now() - runStartedAt
+			});
+		}
+		if (traceId && turnIds) {
+			const turnDurationMs = Date.now() - runStartedAt;
+			if (usage && hasNonzeroUsage(usage)) {
+				const costConfig = resolveModelCostConfig({
+					provider: providerUsed,
+					model: modelUsed,
+					config: cfg
+				});
+				logAiTurnLlm(traceId, turnIds, {
+					provider: providerUsed,
+					model: modelUsed,
+					latencyMs: turnDurationMs,
+					usage: {
+						input: usage.input ?? 0,
+						output: usage.output ?? 0,
+						cacheRead: usage.cacheRead,
+						cacheWrite: usage.cacheWrite,
+						total: usage.total ?? (usage.input ?? 0) + (usage.output ?? 0)
+					},
+					costUsd: estimateUsageCost({
+						usage,
+						cost: costConfig
+					})
+				});
+			}
+			logAiTurnEnd(traceId, turnIds, {
+				totalMs: turnDurationMs,
+				toolCallCount,
+				outcome: replyPayloads.length > 0 ? "success" : "empty"
 			});
 		}
 		const responseUsageMode = resolveResponseUsageMode(activeSessionEntry?.responseUsage ?? (sessionKey ? activeSessionStore?.[sessionKey]?.responseUsage : void 0));
@@ -66325,8 +66550,8 @@ function appendUntrustedContext(base, untrusted) {
 //#region src/auto-reply/reply/get-reply-run.ts
 const BARE_SESSION_RESET_PROMPT = "A new session was started via /new or /reset. Greet the user in your configured persona, if one is provided. Be yourself - use your defined voice, mannerisms, and mood. Keep it to 1-3 sentences and ask what they want to do. If the runtime model differs from default_model in the system prompt, mention the default model. Do not mention internal steps, files, tools, or reasoning.";
 async function runPreparedReply(params) {
-	const { ctx, sessionCtx, cfg, agentId, agentDir, agentCfg, sessionCfg, commandAuthorized, command, commandSource, allowTextCommands, directives, defaultActivation, elevatedEnabled, elevatedAllowed, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, modelState, provider, model, perMessageQueueMode, perMessageQueueOptions, typing, opts, defaultProvider, defaultModel, timeoutMs, isNewSession, resetTriggered, systemSent, sessionKey, sessionId, storePath, workspaceDir, sessionStore } = params;
-	let { sessionEntry, resolvedThinkLevel, resolvedVerboseLevel, resolvedReasoningLevel, resolvedElevatedLevel, execOverrides, abortedLastRun } = params;
+	const { ctx, sessionCtx, cfg, agentId, agentDir, agentCfg, sessionCfg, commandAuthorized, command, commandSource, allowTextCommands, directives, defaultActivation, elevatedEnabled, elevatedAllowed, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, modelState, perMessageQueueMode, perMessageQueueOptions, typing, opts, defaultProvider, defaultModel, timeoutMs, isNewSession, resetTriggered, systemSent, sessionKey, sessionId, storePath, workspaceDir, sessionStore } = params;
+	let { provider, model, sessionEntry, resolvedThinkLevel, resolvedVerboseLevel, resolvedReasoningLevel, resolvedElevatedLevel, execOverrides, abortedLastRun } = params;
 	let currentSystemSent = systemSent;
 	const isFirstTurnInSession = isNewSession || !currentSystemSent;
 	const isGroupChat = sessionCtx.ChatType === "group";
@@ -66347,18 +66572,50 @@ async function runPreparedReply(params) {
 		silentToken: SILENT_REPLY_TOKEN
 	}) : "";
 	const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
+	const traceId = generateTraceId();
+	const turnChannelId = (sessionCtx.To?.match(/channel:(\w+)/))?.[1];
+	const turnIds = {
+		sessionId,
+		channelId: turnChannelId,
+		threadId: sessionCtx.MessageThreadId,
+		userId: sessionCtx.SenderName,
+		profile: agentId,
+		agentId
+	};
+	logAiTurnStart(traceId, turnIds);
 	const contextHookConfig = cfg.agents?.defaults?.contextHook;
 	let contextHookPrompt = "";
 	if (contextHookConfig?.enabled && sessionCtx.Body) try {
-		const channelId = (sessionCtx.To?.match(/channel:(\w+)/))?.[1];
-		contextHookPrompt = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, {
+		const hookResult = await fetchMcpContext(contextHookConfig, {
 			messageText: sessionCtx.RawBody ?? sessionCtx.Body,
 			recentMessages: extractRecentHistory(sessionCtx.Body, 5),
 			senderName: sessionCtx.SenderName,
 			threadId: sessionCtx.MessageThreadId,
-			channelId,
+			channelId: turnChannelId,
 			sessionKey
-		}));
+		});
+		contextHookPrompt = buildContextHookPrompt(hookResult);
+		if (hookResult?.metadata) logAiTurnContext(traceId, turnIds, {
+			buildMs: hookResult.metadata.latencyMs ?? 0,
+			tokensTotal: hookResult.metadata.tokensUsed,
+			tokensBySource: hookResult.metadata.tokensBySource,
+			sourcesUsed: hookResult.metadata.sourcesUsed,
+			fallbackUsed: hookResult.metadata.fallbackUsed
+		});
+		const recommendedModel = hookResult?.metadata?.recommended_model;
+		const hasManualOverride = Boolean(sessionEntry?.modelOverride?.trim());
+		if (recommendedModel && !hasManualOverride) {
+			const parts = String(recommendedModel).split("/");
+			if (parts.length === 2 && parts[0] && parts[1]) {
+				const [recProvider, recModel] = parts;
+				const hookComplexity = hookResult?.metadata?.rewriter_complexity ?? "unknown";
+				if (recProvider !== provider || recModel !== model) {
+					logVerbose(`model-routing: complexity=${hookComplexity}, routing ${provider}/${model} → ${recProvider}/${recModel}`);
+					provider = recProvider;
+					model = recModel;
+				} else logVerbose(`model-routing: complexity=${hookComplexity}, already on recommended model ${provider}/${model}`);
+			}
+		}
 	} catch (error) {
 		logVerbose(`mcp-context-hook: error: ${String(error)}`);
 	}
@@ -66575,7 +66832,9 @@ async function runPreparedReply(params) {
 		resolvedBlockStreamingBreak,
 		sessionCtx,
 		shouldInjectGroupIntro,
-		typingMode
+		typingMode,
+		traceId,
+		turnIds
 	});
 }
 

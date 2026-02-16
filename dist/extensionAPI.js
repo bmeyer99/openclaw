@@ -4051,6 +4051,18 @@ function markdownToSlackMrkdwnChunks(markdown, limit, options = {}) {
 //#endregion
 //#region src/slack/send.ts
 const SLACK_TEXT_LIMIT = 4e3;
+const _botUserIdCache = /* @__PURE__ */ new Map();
+async function resolveBotUserId$1(client, token) {
+	const cached = _botUserIdCache.get(token);
+	if (cached) return cached;
+	try {
+		const uid = (await client.auth.test()).user_id;
+		if (uid) _botUserIdCache.set(token, uid);
+		return uid;
+	} catch {
+		return;
+	}
+}
 function resolveToken$6(params) {
 	const explicit = resolveSlackBotToken(params.explicit);
 	if (explicit) return explicit;
@@ -4141,6 +4153,22 @@ async function sendMessageSlack(to, message, opts = {}) {
 		text: chunk,
 		thread_ts: opts.threadTs
 	})).ts ?? lastMessageId;
+	try {
+		const botUserId = await resolveBotUserId$1(client, token);
+		fetch("http://127.0.0.1:18795/ingest", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ event: {
+				type: "message",
+				subtype: "bot_message",
+				user: botUserId,
+				text: trimmedMessage,
+				ts: lastMessageId,
+				channel: channelId,
+				thread_ts: opts.threadTs
+			} })
+		}).catch(() => {});
+	} catch {}
 	return {
 		messageId: lastMessageId || "unknown",
 		channelId
@@ -34045,7 +34073,7 @@ const execAsync = promisify(exec);
 async function fetchMcpContext(config, params) {
 	if (!config?.enabled || !config.mcpServer) return null;
 	const { mcpServer, mcpTool = "build_agent_context", timeoutMs = 1e4, budgetTokens = 6e4 } = config;
-	const { messageText, recentMessages, senderName, threadId, channelId } = params;
+	const { messageText, recentMessages, senderName, threadId, channelId, agentId } = params;
 	if (messageText.trim().length < 10) return null;
 	try {
 		const startTime = Date.now();
@@ -34053,6 +34081,7 @@ async function fetchMcpContext(config, params) {
 		if (senderName) args.push(`sender_name="${escapeForShell(senderName)}"`);
 		if (threadId) args.push(`thread_ts=str:${threadId}`);
 		if (channelId) args.push(`channel_id="${channelId}"`);
+		if (agentId) args.push(`agent_id="${escapeForShell(agentId)}"`);
 		if (budgetTokens) args.push(`context_budget_tokens=${budgetTokens}`);
 		const command = `mcporter call ${mcpServer}.${mcpTool} ${args.join(" ")}`;
 		logVerbose(`mcp-context-hook: calling ${mcpServer}.${mcpTool}`);
@@ -34082,9 +34111,10 @@ async function fetchMcpContext(config, params) {
 /**
 * Build system prompt section from context hook result.
 */
+const CONTEXT_AUTHORITY_PREFIX = "⚠️ AUTHORITATIVE CONTEXT (from knowledge system — takes precedence over conversation history below):\nWhen any information here conflicts with conversation history, ALWAYS use this section as the source of truth.\n";
 function buildContextHookPrompt(result) {
 	if (!result || !result.contextBlock?.trim()) return "";
-	return result.contextBlock;
+	return CONTEXT_AUTHORITY_PREFIX + result.contextBlock;
 }
 /**
 * Extract the last N messages from a combined history body.
@@ -34242,7 +34272,10 @@ function createSessionsSpawnTool(opts) {
 			let ragContext = "";
 			const contextHookConfig = cfg.agents?.defaults?.contextHook;
 			if (contextHookConfig?.enabled && task.trim().length >= 10) try {
-				ragContext = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, { messageText: task }));
+				ragContext = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, {
+					messageText: task,
+					agentId: targetAgentId
+				}));
 				if (ragContext) logVerbose(`sessions-spawn: injected ${ragContext.length} chars of context for subagent`);
 			} catch (error) {
 				logVerbose(`sessions-spawn: context hook failed (non-fatal): ${String(error)}`);
@@ -35715,6 +35748,144 @@ async function handleInlineActions(params) {
 		directives,
 		abortedLastRun
 	};
+}
+
+//#endregion
+//#region src/observability/ai-turn-logger.ts
+/**
+* AI Turn Logger — writes turn lifecycle events to Google Cloud Logging.
+*
+* Uses direct HTTP to the GCL REST API with GCE metadata server auth.
+* No npm dependencies beyond Node builtins — avoids pnpm workspace conflicts.
+*
+* Log name: projects/{PROJECT}/logs/ai_turns
+* Resource: global (same as RG's ai_turn_logger.py)
+*
+* Falls back to logVerbose if GCL write fails (graceful degradation).
+*/
+const LOG_NAME = `projects/${process.env.GCP_PROJECT ?? process.env.GCLOUD_PROJECT ?? "jeeves-486102"}/logs/ai_turns`;
+const GCL_ENTRIES_URL = `https://logging.googleapis.com/v2/entries:write`;
+const METADATA_TOKEN_URL = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
+let cachedToken = null;
+/**
+* Generate a new trace ID for a turn.
+*/
+function generateTraceId() {
+	return crypto.randomUUID();
+}
+/**
+* Get an access token from the GCE metadata server.
+* Caches the token and refreshes before expiry.
+*/
+async function getAccessToken() {
+	const now = Date.now();
+	if (cachedToken && now < cachedToken.expiresAt) return cachedToken.token;
+	try {
+		const resp = await fetch(METADATA_TOKEN_URL, {
+			headers: { "Metadata-Flavor": "Google" },
+			signal: AbortSignal.timeout(3e3)
+		});
+		if (!resp.ok) {
+			logVerbose(`ai-turn-logger: metadata token fetch failed: ${resp.status}`);
+			return null;
+		}
+		const data = await resp.json();
+		cachedToken = {
+			token: data.access_token,
+			expiresAt: now + (data.expires_in - 600) * 1e3
+		};
+		return cachedToken.token;
+	} catch (err) {
+		logVerbose(`ai-turn-logger: metadata token error: ${String(err)}`);
+		return null;
+	}
+}
+/**
+* Write a single log entry to GCL. Fire-and-forget (non-blocking).
+*/
+async function writeToGcl(event) {
+	const token = await getAccessToken();
+	if (!token) {
+		logVerbose(`ai-turn-logger: no token, logging locally: ${JSON.stringify(event)}`);
+		return;
+	}
+	try {
+		const body = JSON.stringify({
+			logName: LOG_NAME,
+			resource: { type: "global" },
+			entries: [{
+				jsonPayload: event,
+				severity: event.eventPhase === "error" ? "ERROR" : "INFO",
+				timestamp: event.timestamp
+			}]
+		});
+		const resp = await fetch(GCL_ENTRIES_URL, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json"
+			},
+			body,
+			signal: AbortSignal.timeout(5e3)
+		});
+		if (!resp.ok) {
+			const text = await resp.text().catch(() => "");
+			logVerbose(`ai-turn-logger: GCL write failed ${resp.status}: ${text.substring(0, 200)}`);
+		}
+	} catch (err) {
+		logVerbose(`ai-turn-logger: GCL write error: ${String(err)}`);
+	}
+}
+/**
+* Build the base fields for an event.
+*/
+function makeBase(traceId, phase, params) {
+	return {
+		traceId,
+		timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+		eventPhase: phase,
+		source: "openclaw",
+		...params
+	};
+}
+/**
+* Log the start of a turn.
+*/
+function logAiTurnStart(traceId, ids) {
+	writeToGcl({
+		...makeBase(traceId, "start", ids),
+		eventPhase: "start"
+	}).catch(() => {});
+}
+/**
+* Log context building completion.
+*/
+function logAiTurnContext(traceId, ids, context) {
+	writeToGcl({
+		...makeBase(traceId, "context", ids),
+		eventPhase: "context",
+		context
+	}).catch(() => {});
+}
+/**
+* Log LLM call completion.
+*/
+function logAiTurnLlm(traceId, ids, llm) {
+	writeToGcl({
+		...makeBase(traceId, "llm", ids),
+		eventPhase: "llm",
+		llm
+	}).catch(() => {});
+}
+/**
+* Log successful turn completion.
+*/
+function logAiTurnEnd(traceId, ids, turn) {
+	writeToGcl({
+		...makeBase(traceId, "end", ids),
+		eventPhase: "end",
+		turn
+	}).catch(() => {});
 }
 
 //#endregion
@@ -37811,7 +37982,7 @@ function createFollowupRunner(params) {
 //#region src/auto-reply/reply/agent-runner.ts
 const BLOCK_REPLY_SEND_TIMEOUT_MS = 15e3;
 async function runReplyAgent(params) {
-	const { commandBody, followupRun, queueKey, resolvedQueue, shouldSteer, shouldFollowup, isActive, isStreaming, opts, typing, sessionEntry, sessionStore, sessionKey, storePath, defaultModel, agentCfgContextTokens, resolvedVerboseLevel, isNewSession, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, sessionCtx, shouldInjectGroupIntro, typingMode } = params;
+	const { commandBody, followupRun, queueKey, resolvedQueue, shouldSteer, shouldFollowup, isActive, isStreaming, opts, typing, sessionEntry, sessionStore, sessionKey, storePath, defaultModel, agentCfgContextTokens, resolvedVerboseLevel, isNewSession, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, sessionCtx, shouldInjectGroupIntro, typingMode, traceId, turnIds } = params;
 	let activeSessionEntry = sessionEntry;
 	const activeSessionStore = sessionStore;
 	let activeIsNewSession = isNewSession;
@@ -37832,6 +38003,7 @@ async function runReplyAgent(params) {
 		resolvedVerboseLevel
 	});
 	const pendingToolTasks = /* @__PURE__ */ new Set();
+	let toolCallCount = 0;
 	const blockReplyTimeoutMs = opts?.blockReplyTimeoutMs ?? BLOCK_REPLY_SEND_TIMEOUT_MS;
 	const replyToChannel = sessionCtx.OriginatingChannel ?? (sessionCtx.Surface ?? sessionCtx.Provider)?.toLowerCase();
 	const replyToMode = resolveReplyToMode(followupRun.run.config, replyToChannel, sessionCtx.AccountId, sessionCtx.ChatType);
@@ -37976,7 +38148,14 @@ async function runReplyAgent(params) {
 			storePath,
 			resolvedVerboseLevel
 		});
-		if (runOutcome.kind === "final") return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
+		if (runOutcome.kind === "final") {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "aborted"
+			});
+			return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
+		}
 		const { runResult, fallbackProvider, fallbackModel, directlySentBlockKeys } = runOutcome;
 		let { didLogHeartbeatStrip, autoCompactionCompleted } = runOutcome;
 		if (shouldInjectGroupIntro && activeSessionEntry && activeSessionStore && sessionKey && activeSessionEntry.groupActivationNeedsSystemIntro) {
@@ -37998,6 +38177,7 @@ async function runReplyAgent(params) {
 			await blockReplyPipeline.flush({ force: true });
 			blockReplyPipeline.stop();
 		}
+		toolCallCount = pendingToolTasks.size;
 		if (pendingToolTasks.size > 0) await Promise.allSettled(pendingToolTasks);
 		const usage = runResult.meta.agentMeta?.usage;
 		const modelUsed = runResult.meta.agentMeta?.model ?? fallbackModel ?? defaultModel;
@@ -38014,7 +38194,14 @@ async function runReplyAgent(params) {
 			systemPromptReport: runResult.meta.systemPromptReport,
 			cliSessionId
 		});
-		if (payloadArray.length === 0) return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		if (payloadArray.length === 0) {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "empty"
+			});
+			return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		}
 		const payloadResult = buildReplyPayloads({
 			payloads: payloadArray,
 			isHeartbeat,
@@ -38033,7 +38220,14 @@ async function runReplyAgent(params) {
 		});
 		const { replyPayloads } = payloadResult;
 		didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
-		if (replyPayloads.length === 0) return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		if (replyPayloads.length === 0) {
+			if (traceId && turnIds) logAiTurnEnd(traceId, turnIds, {
+				totalMs: Date.now() - runStartedAt,
+				toolCallCount,
+				outcome: "empty"
+			});
+			return finalizeWithFollowup(void 0, queueKey, runFollowupTurn);
+		}
 		await signalTypingIfNeeded(replyPayloads, typingSignals);
 		if (isDiagnosticsEnabled(cfg) && hasNonzeroUsage(usage)) {
 			const input = usage.input ?? 0;
@@ -38071,6 +38265,37 @@ async function runReplyAgent(params) {
 				},
 				costUsd,
 				durationMs: Date.now() - runStartedAt
+			});
+		}
+		if (traceId && turnIds) {
+			const turnDurationMs = Date.now() - runStartedAt;
+			if (usage && hasNonzeroUsage(usage)) {
+				const costConfig = resolveModelCostConfig({
+					provider: providerUsed,
+					model: modelUsed,
+					config: cfg
+				});
+				logAiTurnLlm(traceId, turnIds, {
+					provider: providerUsed,
+					model: modelUsed,
+					latencyMs: turnDurationMs,
+					usage: {
+						input: usage.input ?? 0,
+						output: usage.output ?? 0,
+						cacheRead: usage.cacheRead,
+						cacheWrite: usage.cacheWrite,
+						total: usage.total ?? (usage.input ?? 0) + (usage.output ?? 0)
+					},
+					costUsd: estimateUsageCost({
+						usage,
+						cost: costConfig
+					})
+				});
+			}
+			logAiTurnEnd(traceId, turnIds, {
+				totalMs: turnDurationMs,
+				toolCallCount,
+				outcome: replyPayloads.length > 0 ? "success" : "empty"
 			});
 		}
 		const responseUsageMode = resolveResponseUsageMode(activeSessionEntry?.responseUsage ?? (sessionKey ? activeSessionStore?.[sessionKey]?.responseUsage : void 0));
@@ -38151,8 +38376,8 @@ function appendUntrustedContext(base, untrusted) {
 //#region src/auto-reply/reply/get-reply-run.ts
 const BARE_SESSION_RESET_PROMPT = "A new session was started via /new or /reset. Greet the user in your configured persona, if one is provided. Be yourself - use your defined voice, mannerisms, and mood. Keep it to 1-3 sentences and ask what they want to do. If the runtime model differs from default_model in the system prompt, mention the default model. Do not mention internal steps, files, tools, or reasoning.";
 async function runPreparedReply(params) {
-	const { ctx, sessionCtx, cfg, agentId, agentDir, agentCfg, sessionCfg, commandAuthorized, command, commandSource, allowTextCommands, directives, defaultActivation, elevatedEnabled, elevatedAllowed, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, modelState, provider, model, perMessageQueueMode, perMessageQueueOptions, typing, opts, defaultProvider, defaultModel, timeoutMs, isNewSession, resetTriggered, systemSent, sessionKey, sessionId, storePath, workspaceDir, sessionStore } = params;
-	let { sessionEntry, resolvedThinkLevel, resolvedVerboseLevel, resolvedReasoningLevel, resolvedElevatedLevel, execOverrides, abortedLastRun } = params;
+	const { ctx, sessionCtx, cfg, agentId, agentDir, agentCfg, sessionCfg, commandAuthorized, command, commandSource, allowTextCommands, directives, defaultActivation, elevatedEnabled, elevatedAllowed, blockStreamingEnabled, blockReplyChunking, resolvedBlockStreamingBreak, modelState, perMessageQueueMode, perMessageQueueOptions, typing, opts, defaultProvider, defaultModel, timeoutMs, isNewSession, resetTriggered, systemSent, sessionKey, sessionId, storePath, workspaceDir, sessionStore } = params;
+	let { provider, model, sessionEntry, resolvedThinkLevel, resolvedVerboseLevel, resolvedReasoningLevel, resolvedElevatedLevel, execOverrides, abortedLastRun } = params;
 	let currentSystemSent = systemSent;
 	const isFirstTurnInSession = isNewSession || !currentSystemSent;
 	const isGroupChat = sessionCtx.ChatType === "group";
@@ -38173,18 +38398,50 @@ async function runPreparedReply(params) {
 		silentToken: SILENT_REPLY_TOKEN
 	}) : "";
 	const groupSystemPrompt = sessionCtx.GroupSystemPrompt?.trim() ?? "";
+	const traceId = generateTraceId();
+	const turnChannelId = (sessionCtx.To?.match(/channel:(\w+)/))?.[1];
+	const turnIds = {
+		sessionId,
+		channelId: turnChannelId,
+		threadId: sessionCtx.MessageThreadId,
+		userId: sessionCtx.SenderName,
+		profile: agentId,
+		agentId
+	};
+	logAiTurnStart(traceId, turnIds);
 	const contextHookConfig = cfg.agents?.defaults?.contextHook;
 	let contextHookPrompt = "";
 	if (contextHookConfig?.enabled && sessionCtx.Body) try {
-		const channelId = (sessionCtx.To?.match(/channel:(\w+)/))?.[1];
-		contextHookPrompt = buildContextHookPrompt(await fetchMcpContext(contextHookConfig, {
+		const hookResult = await fetchMcpContext(contextHookConfig, {
 			messageText: sessionCtx.RawBody ?? sessionCtx.Body,
 			recentMessages: extractRecentHistory(sessionCtx.Body, 5),
 			senderName: sessionCtx.SenderName,
 			threadId: sessionCtx.MessageThreadId,
-			channelId,
+			channelId: turnChannelId,
 			sessionKey
-		}));
+		});
+		contextHookPrompt = buildContextHookPrompt(hookResult);
+		if (hookResult?.metadata) logAiTurnContext(traceId, turnIds, {
+			buildMs: hookResult.metadata.latencyMs ?? 0,
+			tokensTotal: hookResult.metadata.tokensUsed,
+			tokensBySource: hookResult.metadata.tokensBySource,
+			sourcesUsed: hookResult.metadata.sourcesUsed,
+			fallbackUsed: hookResult.metadata.fallbackUsed
+		});
+		const recommendedModel = hookResult?.metadata?.recommended_model;
+		const hasManualOverride = Boolean(sessionEntry?.modelOverride?.trim());
+		if (recommendedModel && !hasManualOverride) {
+			const parts = String(recommendedModel).split("/");
+			if (parts.length === 2 && parts[0] && parts[1]) {
+				const [recProvider, recModel] = parts;
+				const hookComplexity = hookResult?.metadata?.rewriter_complexity ?? "unknown";
+				if (recProvider !== provider || recModel !== model) {
+					logVerbose(`model-routing: complexity=${hookComplexity}, routing ${provider}/${model} → ${recProvider}/${recModel}`);
+					provider = recProvider;
+					model = recModel;
+				} else logVerbose(`model-routing: complexity=${hookComplexity}, already on recommended model ${provider}/${model}`);
+			}
+		}
 	} catch (error) {
 		logVerbose(`mcp-context-hook: error: ${String(error)}`);
 	}
@@ -38401,7 +38658,9 @@ async function runPreparedReply(params) {
 		resolvedBlockStreamingBreak,
 		sessionCtx,
 		shouldInjectGroupIntro,
-		typingMode
+		typingMode,
+		traceId,
+		turnIds
 	});
 }
 
@@ -43835,7 +44094,7 @@ function isLikelyWhatsAppCryptoError(reason) {
 
 //#endregion
 //#region src/auto-reply/reply/history.ts
-const HISTORY_CONTEXT_MARKER = "[Chat messages since your last reply - for context]";
+const HISTORY_CONTEXT_MARKER = "[Chat messages since your last reply - for context]\n[⚠️ CONVERSATION HISTORY MAY CONTAIN OUTDATED INFORMATION. When conversation history conflicts with Knowledge, Memories, or other authoritative context sections in the system prompt, ALWAYS prefer those authoritative sources.]";
 const DEFAULT_GROUP_HISTORY_LIMIT = 50;
 /** Maximum number of group history keys to retain (LRU eviction when exceeded). */
 const MAX_HISTORY_KEYS = 1e3;
