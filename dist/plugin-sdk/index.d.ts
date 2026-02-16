@@ -1,7 +1,7 @@
 import { ZodTypeAny, z } from "zod";
 import fs from "node:fs";
 import { Logger } from "tslog";
-import JSON5 from "json5";
+import json5 from "json5";
 import "chalk";
 import { ImageContent, OAuthCredentials } from "@mariozechner/pi-ai";
 import AjvPkg from "ajv";

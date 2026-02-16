@@ -237,14 +237,13 @@ async function resolveMemoryBootstrapEntries(
 export async function loadWorkspaceBootstrapFiles(dir: string): Promise<WorkspaceBootstrapFile[]> {
   const resolvedDir = resolveUserPath(dir);
 
+  // REMOVED from injection (2026-02-16): AGENTS.md, IDENTITY.md, MEMORY.md
+  // These are now sourced dynamically via RG context injection (build_agent_context).
+  // Static file injection was causing stale data to poison the system prompt.
   const entries: Array<{
     name: WorkspaceBootstrapFileName;
     filePath: string;
   }> = [
-    {
-      name: DEFAULT_AGENTS_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_AGENTS_FILENAME),
-    },
     {
       name: DEFAULT_SOUL_FILENAME,
       filePath: path.join(resolvedDir, DEFAULT_SOUL_FILENAME),
@@ -252,10 +251,6 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
     {
       name: DEFAULT_TOOLS_FILENAME,
       filePath: path.join(resolvedDir, DEFAULT_TOOLS_FILENAME),
-    },
-    {
-      name: DEFAULT_IDENTITY_FILENAME,
-      filePath: path.join(resolvedDir, DEFAULT_IDENTITY_FILENAME),
     },
     {
       name: DEFAULT_USER_FILENAME,
@@ -270,8 +265,6 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
       filePath: path.join(resolvedDir, DEFAULT_BOOTSTRAP_FILENAME),
     },
   ];
-
-  entries.push(...(await resolveMemoryBootstrapEntries(resolvedDir)));
 
   const result: WorkspaceBootstrapFile[] = [];
   for (const entry of entries) {
