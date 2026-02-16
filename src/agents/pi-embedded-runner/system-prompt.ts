@@ -26,6 +26,8 @@ export function buildEmbeddedSystemPrompt(params: {
   workspaceNotes?: string[];
   /** Controls which hardcoded sections to include. Defaults to "full". */
   promptMode?: PromptMode;
+  /** Soul + protocol identity content from RG context hook. Placed first in system prompt. */
+  identityOverride?: string;
   runtimeInfo: {
     agentId?: string;
     host: string;
@@ -54,6 +56,7 @@ export function buildEmbeddedSystemPrompt(params: {
     defaultThinkLevel: params.defaultThinkLevel,
     reasoningLevel: params.reasoningLevel,
     extraSystemPrompt: params.extraSystemPrompt,
+    identityOverride: params.identityOverride,
     ownerNumbers: params.ownerNumbers,
     reasoningTagHint: params.reasoningTagHint,
     heartbeatPrompt: params.heartbeatPrompt,

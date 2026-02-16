@@ -6,7 +6,7 @@ import "chalk";
 import { ImageContent, OAuthCredentials } from "@mariozechner/pi-ai";
 import AjvPkg from "ajv";
 import { AuthStorage, ModelRegistry, Skill } from "@mariozechner/pi-coding-agent";
-import * as _sinclair_typebox1498 from "@sinclair/typebox";
+import * as _sinclair_typebox1790 from "@sinclair/typebox";
 import { Static, TSchema } from "@sinclair/typebox";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { lookup } from "node:dns";
@@ -4441,51 +4441,51 @@ type ChatAbortControllerEntry = {
 };
 //#endregion
 //#region src/gateway/protocol/schema/frames.d.ts
-declare const ConnectParamsSchema: _sinclair_typebox1498.TObject<{
-  minProtocol: _sinclair_typebox1498.TInteger;
-  maxProtocol: _sinclair_typebox1498.TInteger;
-  client: _sinclair_typebox1498.TObject<{
-    id: _sinclair_typebox1498.TUnion<_sinclair_typebox1498.TLiteral<"webchat" | "cli" | "webchat-ui" | "openclaw-control-ui" | "gateway-client" | "openclaw-macos" | "openclaw-ios" | "openclaw-android" | "node-host" | "test" | "fingerprint" | "openclaw-probe">[]>;
-    displayName: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-    version: _sinclair_typebox1498.TString;
-    platform: _sinclair_typebox1498.TString;
-    deviceFamily: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-    modelIdentifier: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-    mode: _sinclair_typebox1498.TUnion<_sinclair_typebox1498.TLiteral<"webchat" | "cli" | "node" | "ui" | "backend" | "test" | "probe">[]>;
-    instanceId: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
+declare const ConnectParamsSchema: _sinclair_typebox1790.TObject<{
+  minProtocol: _sinclair_typebox1790.TInteger;
+  maxProtocol: _sinclair_typebox1790.TInteger;
+  client: _sinclair_typebox1790.TObject<{
+    id: _sinclair_typebox1790.TUnion<_sinclair_typebox1790.TLiteral<"webchat" | "cli" | "webchat-ui" | "openclaw-control-ui" | "gateway-client" | "openclaw-macos" | "openclaw-ios" | "openclaw-android" | "node-host" | "test" | "fingerprint" | "openclaw-probe">[]>;
+    displayName: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+    version: _sinclair_typebox1790.TString;
+    platform: _sinclair_typebox1790.TString;
+    deviceFamily: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+    modelIdentifier: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+    mode: _sinclair_typebox1790.TUnion<_sinclair_typebox1790.TLiteral<"webchat" | "cli" | "node" | "ui" | "backend" | "test" | "probe">[]>;
+    instanceId: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
   }>;
-  caps: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TArray<_sinclair_typebox1498.TString>>;
-  commands: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TArray<_sinclair_typebox1498.TString>>;
-  permissions: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TRecord<_sinclair_typebox1498.TString, _sinclair_typebox1498.TBoolean>>;
-  pathEnv: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-  role: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-  scopes: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TArray<_sinclair_typebox1498.TString>>;
-  device: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TObject<{
-    id: _sinclair_typebox1498.TString;
-    publicKey: _sinclair_typebox1498.TString;
-    signature: _sinclair_typebox1498.TString;
-    signedAt: _sinclair_typebox1498.TInteger;
-    nonce: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
+  caps: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TArray<_sinclair_typebox1790.TString>>;
+  commands: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TArray<_sinclair_typebox1790.TString>>;
+  permissions: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TRecord<_sinclair_typebox1790.TString, _sinclair_typebox1790.TBoolean>>;
+  pathEnv: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+  role: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+  scopes: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TArray<_sinclair_typebox1790.TString>>;
+  device: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TObject<{
+    id: _sinclair_typebox1790.TString;
+    publicKey: _sinclair_typebox1790.TString;
+    signature: _sinclair_typebox1790.TString;
+    signedAt: _sinclair_typebox1790.TInteger;
+    nonce: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
   }>>;
-  auth: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TObject<{
-    token: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-    password: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
+  auth: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TObject<{
+    token: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+    password: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
   }>>;
-  locale: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
-  userAgent: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TString>;
+  locale: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
+  userAgent: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TString>;
 }>;
-declare const ErrorShapeSchema: _sinclair_typebox1498.TObject<{
-  code: _sinclair_typebox1498.TString;
-  message: _sinclair_typebox1498.TString;
-  details: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TUnknown>;
-  retryable: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TBoolean>;
-  retryAfterMs: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TInteger>;
+declare const ErrorShapeSchema: _sinclair_typebox1790.TObject<{
+  code: _sinclair_typebox1790.TString;
+  message: _sinclair_typebox1790.TString;
+  details: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TUnknown>;
+  retryable: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TBoolean>;
+  retryAfterMs: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TInteger>;
 }>;
-declare const RequestFrameSchema: _sinclair_typebox1498.TObject<{
-  type: _sinclair_typebox1498.TLiteral<"req">;
-  id: _sinclair_typebox1498.TString;
-  method: _sinclair_typebox1498.TString;
-  params: _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TUnknown>;
+declare const RequestFrameSchema: _sinclair_typebox1790.TObject<{
+  type: _sinclair_typebox1790.TLiteral<"req">;
+  id: _sinclair_typebox1790.TString;
+  method: _sinclair_typebox1790.TString;
+  params: _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TUnknown>;
 }>;
 //#endregion
 //#region src/gateway/protocol/schema/types.d.ts
@@ -8395,8 +8395,8 @@ type StringEnumOptions<T extends readonly string[]> = {
   title?: string;
   default?: T[number];
 };
-declare function stringEnum<T extends readonly string[]>(values: T, options?: StringEnumOptions<T>): _sinclair_typebox1498.TUnsafe<T[number]>;
-declare function optionalStringEnum<T extends readonly string[]>(values: T, options?: StringEnumOptions<T>): _sinclair_typebox1498.TOptional<_sinclair_typebox1498.TUnsafe<T[number]>>;
+declare function stringEnum<T extends readonly string[]>(values: T, options?: StringEnumOptions<T>): _sinclair_typebox1790.TUnsafe<T[number]>;
+declare function optionalStringEnum<T extends readonly string[]>(values: T, options?: StringEnumOptions<T>): _sinclair_typebox1790.TOptional<_sinclair_typebox1790.TUnsafe<T[number]>>;
 //#endregion
 //#region src/channels/plugins/config-schema.d.ts
 declare function buildChannelConfigSchema(schema: ZodTypeAny): ChannelConfigSchema;

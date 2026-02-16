@@ -40,6 +40,8 @@ export interface ContextHookConfig {
 
 export interface ContextHookResult {
   contextBlock: string;
+  /** Soul + protocol content for system prompt identity placement (first in prompt). */
+  identityBlock?: string;
   metadata?: {
     tokensUsed?: number;
     latencyMs?: number;
@@ -138,10 +140,12 @@ export async function fetchMcpContext(
 
     // Handle both snake_case and camelCase response formats
     const contextBlock = result.context_block ?? result.contextBlock ?? "";
+    const identityBlock = result.identity_block ?? result.identityBlock ?? "";
     const metadata = result.metadata ?? {};
 
     return {
       contextBlock,
+      identityBlock: identityBlock || undefined,
       metadata: {
         ...metadata,
         latencyMs,

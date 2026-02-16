@@ -211,6 +211,7 @@ export async function runPreparedReply(
   // MCP Context Hook - call configured MCP tool to build context
   const contextHookConfig = cfg.agents?.defaults?.contextHook;
   let contextHookPrompt = "";
+  let contextHookIdentity = "";
   if (contextHookConfig?.enabled && sessionCtx.Body) {
     try {
       const hookResult = await fetchMcpContext(contextHookConfig, {
@@ -222,6 +223,7 @@ export async function runPreparedReply(
         sessionKey,
       });
       contextHookPrompt = buildContextHookPrompt(hookResult);
+      contextHookIdentity = hookResult?.identityBlock ?? "";
 
       // Log context phase with metadata from the hook result
       if (hookResult?.metadata) {
@@ -483,6 +485,7 @@ export async function runPreparedReply(
       blockReplyBreak: resolvedBlockStreamingBreak,
       ownerNumbers: command.ownerList.length > 0 ? command.ownerList : undefined,
       extraSystemPrompt: extraSystemPrompt || undefined,
+      identityOverride: contextHookIdentity || undefined,
       ...(isReasoningTagProvider(provider) ? { enforceFinalTag: true } : {}),
     },
   };
