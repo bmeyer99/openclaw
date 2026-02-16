@@ -166,6 +166,8 @@ export function buildAgentSystemPrompt(params: {
   defaultThinkLevel?: ThinkLevel;
   reasoningLevel?: ReasoningLevel;
   extraSystemPrompt?: string;
+  /** Soul + protocol identity content from RG context hook. Placed first in system prompt. */
+  identityOverride?: string;
   ownerNumbers?: string[];
   reasoningTagHint?: boolean;
   toolNames?: string[];
@@ -373,8 +375,12 @@ export function buildAgentSystemPrompt(params: {
 
   const lines: string[] = [];
 
-  // Layer 1: Identity — SOUL.md content comes first when present.
-  if (soulFile?.content?.trim()) {
+  // Layer 1: Identity — SOUL content comes first.
+  // Priority: identityOverride (from RG context hook) > SOUL.md file > generic fallback
+  const identityOverride = params.identityOverride?.trim();
+  if (identityOverride) {
+    lines.push(identityOverride, "");
+  } else if (soulFile?.content?.trim()) {
     lines.push(soulFile.content.trim(), "");
   } else {
     lines.push("You are a personal assistant running inside OpenClaw.", "");

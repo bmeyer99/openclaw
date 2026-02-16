@@ -1,21 +1,21 @@
 import { $ as setActivePluginRegistry, A as truncateUtf16Safe, B as theme, C as resolveJidToE164, D as sleep, E as shortenHomePath, F as shouldLogVerbose, H as registerLogTransport, I as success, J as normalizeAnyChannelId, K as CHAT_CHANNEL_ORDER, L as warn, M as info, N as logVerbose, O as sliceUtf16Safe, P as setVerbose, Q as requireActivePluginRegistry, R as colorize, T as shortenHomeInString, V as getChildLogger, W as normalizeLogLevel, X as normalizeChatChannelId, Y as normalizeChannelId, Z as getActivePluginRegistry, _ as ensureDir$3, a as logDebug, b as jidToE164, c as logWarn, d as clearActiveProgressLine, f as registerActiveProgressLine, h as clampInt, i as spawnWithFallback, j as danger, k as toWhatsappJid, l as createSubsystemLogger, m as CONFIG_DIR, n as runExec, o as logError, p as unregisterActiveProgressLine, q as getChatChannelMeta, r as formatSpawnError, s as logInfo, t as runCommandWithTimeout, u as defaultRuntime, v as formatTerminalLink, w as resolveUserPath, x as normalizeE164, y as isSelfChatMode, z as isRich } from "./exec-CjyVHUuE.js";
-import { $ as requireOpenAllowFrom, A as logoutWeb, B as IMessageConfigSchema, C as VERSION, D as resolveWhatsAppAuthDir, E as resolveWhatsAppAccount, G as ToolPolicySchema, H as SignalConfigSchema, I as webAuthExists, J as DmPolicySchema, K as BlockStreamingCoalesceSchema, L as WhatsAppConfigSchema, M as readWebSelfId, O as getWebAuthAgeMs, Q as normalizeAllowFrom, R as DiscordConfigSchema, S as resolveAgentMaxConcurrent, T as resolveDefaultWhatsAppAccountId, U as SlackConfigSchema, V as MSTeamsConfigSchema, W as TelegramConfigSchema, X as MarkdownConfigSchema, Y as GroupPolicySchema, Z as MarkdownTableModeSchema, _ as unsetConfigOverride, a as validateConfigObjectWithPlugins, b as setConfigValueAtPath, c as discoverOpenClawPlugins, d as normalizePluginsConfig, et as isSafeExecutableValue, f as resolveEnableState, g as setConfigOverride, h as resetConfigOverrides, i as writeConfigFile, it as resolveTelegramCustomCommands, k as logWebSelfId, m as getConfigOverrides, n as readConfigFileSnapshot, nt as TELEGRAM_COMMAND_NAME_PATTERN, o as validateJsonSchemaValue, p as resolveMemorySlotDecision, q as DmConfigSchema, r as resolveConfigSnapshotHash, rt as normalizeTelegramCommandName, s as loadPluginManifestRegistry, t as loadConfig, tt as parseDurationMs, v as getConfigValueAtPath, w as listWhatsAppAccountIds, x as unsetConfigValueAtPath, y as parseConfigPath, z as GoogleChatConfigSchema } from "./config-oIMOKgjT.js";
-import { A as normalizeAccountId, D as buildAgentMainSessionKey, E as DEFAULT_MAIN_KEY, F as sanitizeAgentId, I as isAcpSessionKey, L as isSubagentSessionKey, M as normalizeMainKey, N as resolveAgentIdFromSessionKey, O as buildAgentPeerSessionKey, P as resolveThreadSessionKeys, R as parseAgentSessionKey, S as resolveOpenClawPackageRoot, T as DEFAULT_AGENT_ID, b as filterBootstrapFilesForSession, c as resolveDefaultAgentId, f as DEFAULT_AGENT_WORKSPACE_DIR, i as resolveAgentModelFallbacksOverride, j as normalizeAgentId, k as buildGroupHistoryKey, l as resolveSessionAgentId, n as resolveAgentConfig, o as resolveAgentSkillsFilter, p as DEFAULT_BOOTSTRAP_FILENAME, r as resolveAgentDir, s as resolveAgentWorkspaceDir, t as listAgentIds, u as resolveSessionAgentIds, w as DEFAULT_ACCOUNT_ID, x as loadWorkspaceBootstrapFiles, y as ensureAgentWorkspace, z as resolveThreadParentSessionKey } from "./agent-scope-qNPdmst1.js";
+import { $ as requireOpenAllowFrom, A as logoutWeb, B as IMessageConfigSchema, C as VERSION, D as resolveWhatsAppAuthDir, E as resolveWhatsAppAccount, G as ToolPolicySchema, H as SignalConfigSchema, I as webAuthExists, J as DmPolicySchema, K as BlockStreamingCoalesceSchema, L as WhatsAppConfigSchema, M as readWebSelfId, O as getWebAuthAgeMs, Q as normalizeAllowFrom, R as DiscordConfigSchema, S as resolveAgentMaxConcurrent, T as resolveDefaultWhatsAppAccountId, U as SlackConfigSchema, V as MSTeamsConfigSchema, W as TelegramConfigSchema, X as MarkdownConfigSchema, Y as GroupPolicySchema, Z as MarkdownTableModeSchema, _ as unsetConfigOverride, a as validateConfigObjectWithPlugins, b as setConfigValueAtPath, c as discoverOpenClawPlugins, d as normalizePluginsConfig, et as isSafeExecutableValue, f as resolveEnableState, g as setConfigOverride, h as resetConfigOverrides, i as writeConfigFile, it as resolveTelegramCustomCommands, k as logWebSelfId, m as getConfigOverrides, n as readConfigFileSnapshot, nt as TELEGRAM_COMMAND_NAME_PATTERN, o as validateJsonSchemaValue, p as resolveMemorySlotDecision, q as DmConfigSchema, r as resolveConfigSnapshotHash, rt as normalizeTelegramCommandName, s as loadPluginManifestRegistry, t as loadConfig, tt as parseDurationMs, v as getConfigValueAtPath, w as listWhatsAppAccountIds, x as unsetConfigValueAtPath, y as parseConfigPath, z as GoogleChatConfigSchema } from "./config-AqN7HGRw.js";
+import { A as normalizeAccountId, D as buildAgentMainSessionKey, E as DEFAULT_MAIN_KEY, F as sanitizeAgentId, I as isAcpSessionKey, L as isSubagentSessionKey, M as normalizeMainKey, N as resolveAgentIdFromSessionKey, O as buildAgentPeerSessionKey, P as resolveThreadSessionKeys, R as parseAgentSessionKey, S as resolveOpenClawPackageRoot, T as DEFAULT_AGENT_ID, b as filterBootstrapFilesForSession, c as resolveDefaultAgentId, f as DEFAULT_AGENT_WORKSPACE_DIR, i as resolveAgentModelFallbacksOverride, j as normalizeAgentId, k as buildGroupHistoryKey, l as resolveSessionAgentId, n as resolveAgentConfig, o as resolveAgentSkillsFilter, p as DEFAULT_BOOTSTRAP_FILENAME, r as resolveAgentDir, s as resolveAgentWorkspaceDir, t as listAgentIds, u as resolveSessionAgentIds, w as DEFAULT_ACCOUNT_ID, x as loadWorkspaceBootstrapFiles, y as ensureAgentWorkspace, z as resolveThreadParentSessionKey } from "./agent-scope-C-blp4Gy.js";
 import { a as resolveOAuthDir, i as resolveGatewayPort, n as resolveConfigPath, s as resolveStateDir, t as STATE_DIR } from "./paths-BFxmmTT5.js";
-import { A as chunkMarkdownTextWithMode, B as MediaFetchError, C as markdownToIR, D as wrapFetchWithAbortSignal, E as resolveFetch, F as findFenceSpanAt, G as SILENT_REPLY_TOKEN, H as fetchWithSsrFGuard, I as isSafeFenceBreak, K as isSilentReplyText, L as parseFenceSpans, M as chunkTextWithMode, N as resolveChunkMode, O as chunkByNewline, P as resolveTextChunkLimit, R as loadWebMedia, S as chunkMarkdownIR, T as resolveMarkdownTableMode, U as resolveChannelMediaMaxBytes, V as fetchRemoteMedia, W as HEARTBEAT_TOKEN, _ as sendReadReceiptSignal, a as filterMessagingToolDuplicates, b as signalRpcRequest, c as createReplyToModeFilterForChannel, d as normalizeChannelTargetInput, f as normalizeTargetForProvider, g as sendMessageSignal, h as parseInlineDirectives$1, i as applyReplyThreading, j as chunkText, k as chunkMarkdownText, l as resolveReplyToMode, m as splitMediaFromOutput, n as normalizeReplyPayloadsForDelivery, o as isRenderablePayload, p as parseReplyDirectives, r as applyReplyTagsToPayload, s as shouldSuppressMessagingToolReplies, t as deliverOutboundPayloads, u as buildTargetResolverSignature, v as sendTypingSignal, w as markdownToIRWithMeta, x as streamSignalEvents, y as signalCheck, z as loadWebMediaRaw } from "./deliver-CBS_TrY7.js";
-import { $ as sanitizeGoogleTurnOrdering, $n as normalizeWhatsAppTarget, $t as resolveSessionResetPolicy, A as resolveSandboxRuntimeStatus, An as normalizeSlackMessagingTarget, Ar as resolveToolsBySender, At as isGifMedia, B as applySkillEnvOverrides, Bn as resolveDiscordGroupRequireMention, Bt as updateLastRoute, C as isRawApiErrorPayload, Cn as listSlackDirectoryGroupsFromConfig, Cr as listEnabledDiscordAccounts, D as sanitizeUserFacingText, Dn as listWhatsAppDirectoryGroupsFromConfig, Dr as resolveChannelGroupPolicy, Dt as getFileExtension, E as parseImageSizeError, En as listTelegramDirectoryPeersFromConfig, Er as normalizeDiscordToken, Et as extensionForMime, F as buildWorkspaceSkillCommandSpecs, Fn as requireTargetKind, Ft as appendAssistantMessageToSessionTranscript, G as expandPolicyWithPluginGroups, Gn as resolveIMessageGroupToolPolicy, Gt as deliveryContextFromSession, H as resolveSandboxConfigForAgent, Hn as resolveGoogleChatGroupRequireMention, Ht as updateSessionStoreEntry, I as buildWorkspaceSkillSnapshot, In as getChannelDock, J as resolveToolProfilePolicy, Jn as resolveTelegramGroupRequireMention, Jt as normalizeDeliveryContext, K as expandToolGroups, Kn as resolveSlackGroupRequireMention, Kt as deliveryContextKey, L as loadWorkspaceSkillEntries, Ln as listChannelDocks, Lt as loadSessionStore, M as registerBrowserRoutes, Mn as resolveSlackChannelId, Mt as MAX_IMAGE_BYTES, N as resolveBrowserConfig, Nn as buildMessagingTarget, O as ensureSandboxWorkspaceForSession, On as listWhatsAppDirectoryPeersFromConfig, Or as resolveChannelGroupRequireMention, Ot as imageMimeFromFormat, P as resolveProfile, Pn as ensureTargetId, Pt as mediaKindFromMime, Q as resolveBootstrapMaxChars, Qn as isWhatsAppGroupJid, Qt as resolveChannelResetConfig, R as resolveSkillsPromptForRun, Rn as resolveBlueBubblesGroupRequireMention, Rt as readSessionUpdatedAt, S as isRateLimitAssistantError, Sn as listDiscordDirectoryPeersFromConfig, Sr as listDiscordAccountIds, T as parseImageDimensionError, Tn as listTelegramDirectoryGroupsFromConfig, Tr as resolveDiscordAccount, Tt as detectMime, U as buildPluginToolGroups, Un as resolveGoogleChatGroupToolPolicy, Ut as isCacheEnabled, V as applySkillEnvOverridesFromSnapshot, Vn as resolveDiscordGroupToolPolicy, Vt as updateSessionStore, W as collectExplicitAllowlist, Wn as resolveIMessageGroupRequireMention, Wt as resolveCacheTtlMs$1, X as buildBootstrapContextFiles, Xn as resolveWhatsAppGroupRequireMention, Xt as resolveSessionKey$1, Y as stripPluginOnlyAllowlist, Yn as resolveTelegramGroupToolPolicy, Yt as normalizeSessionDeliveryFields, Z as ensureSessionHeader, Zn as resolveWhatsAppGroupToolPolicy, Zt as evaluateSessionFreshness, _ as isCompactionFailureError, _n as GATEWAY_CLIENT_NAMES, _r as resolveDefaultSignalAccountId, a as isMessagingToolDuplicateNormalized, an as resolveConversationLabel, ar as listBindings, at as normalizeThinkLevel, b as isFailoverErrorMessage, bn as normalizeChannelId$1, br as resolveDefaultIMessageAccountId, c as downgradeOpenAIReasoningBlocks, cn as isDeliverableMessageChannel, cr as listSlackAccountIds, ct as resolveResponseUsageMode, d as classifyFailoverReason, dn as listDeliverableMessageChannels, dr as resolveSlackReplyToMode, dt as getMediaDir, en as resolveSessionResetType, er as listEnabledTelegramAccounts, et as formatThinkingLevels, f as formatAssistantErrorText, fn as normalizeMessageChannel, fr as resolveSlackAppToken, ft as saveMediaBuffer, g as isCloudCodeAssistFormatError, gn as GATEWAY_CLIENT_MODES, gr as listSignalAccountIds, h as isAuthAssistantError, hn as GATEWAY_CLIENT_IDS, hr as listEnabledSignalAccounts, in as deriveSessionMetaPatch, ir as resolveTelegramToken, it as normalizeReasoningLevel, j as createBrowserRouteContext, jn as parseSlackTarget, jt as kindFromMime, k as resolveSandboxContext, kn as looksLikeSlackTargetId, kr as resolveChannelGroupToolsPolicy, kt as isAudioFileName, l as isAntigravityClaude, ln as isInternalMessageChannel, lr as resolveDefaultSlackAccountId, lt as supportsXHighThinking, m as getApiErrorPayloadFingerprint, mn as resolveMessageChannel, mr as normalizeChatType, n as validateGeminiTurns, nn as DEFAULT_RESET_TRIGGERS, nr as resolveDefaultTelegramAccountId, nt as listThinkingLevels, o as normalizeTextForComparison, on as resolveGroupSessionKey, or as buildSlackThreadingToolContext, ot as normalizeUsageDisplay, p as formatRawAssistantErrorForUi, pn as resolveGatewayMessageChannel, pr as resolveSlackBotToken, pt as SsrFBlockedError, q as normalizeToolName, qn as resolveSlackGroupToolPolicy, qt as mergeDeliveryContext, r as pickFallbackThinkingLevel, rn as resolveMainSessionKey, rr as resolveTelegramAccount, rt as normalizeElevatedLevel, s as sanitizeSessionMessagesImages, sn as INTERNAL_MESSAGE_CHANNEL, sr as listEnabledSlackAccounts, st as normalizeVerboseLevel, t as validateAnthropicTurns, tn as resolveThreadFlag, tr as listTelegramAccountIds, tt as formatXHighModelHint, u as isGoogleModelApi, un as isMarkdownCapableMessageChannel, ur as resolveSlackAccount, ut as extractOriginalFilename, v as isContextOverflowError, vn as getChannelPlugin, vr as resolveSignalAccount, vt as sanitizeImageBlocks, w as isTimeoutErrorMessage, wn as listSlackDirectoryPeersFromConfig, wr as resolveDefaultDiscordAccountId, wt as resizeToJpeg, x as isLikelyContextOverflowError, xn as listDiscordDirectoryGroupsFromConfig, xr as resolveIMessageAccount, xt as getImageMetadata, y as isFailoverAssistantError, yn as listChannelPlugins, yr as listIMessageAccountIds, yt as sanitizeToolResultImages, z as resolvePluginSkillDirs, zn as resolveBlueBubblesGroupToolPolicy, zt as recordSessionMetaFromInbound } from "./pi-embedded-helpers-DY5i5CUk.js";
-import { A as listProfilesForProvider, B as getShellPathFromLoginShell, D as resolveApiKeyForProfile, E as markAuthProfileUsed, F as resolveOpenClawAgentDir, G as isTruthyEnvValue, H as resolveShellEnvFallbackTimeoutMs, I as resolveAuthProfileDisplayLabel, K as parseBooleanValue$1, L as DEFAULT_CONTEXT_TOKENS, M as ensureAuthProfileStore, P as resolveAuthStorePathForDisplay, R as DEFAULT_MODEL, S as resolveAuthProfileOrder, T as markAuthProfileFailure, _ as getCustomProviderApiKey, a as normalizeProviderId, b as resolveEnvApiKey, c as resolveDefaultModelForAgent, d as normalizeGoogleModelId, g as getApiKeyForModel, i as modelKey, j as markAuthProfileGood, l as resolveModelRefFromString, n as buildModelAliasIndex, o as parseModelRef, r as isCliProvider, s as resolveConfiguredModelRef, t as buildAllowedModelSet, u as resolveThinkingDefault, v as requireApiKey, w as isProfileInCooldown, x as resolveModelAuthMode, y as resolveApiKeyForProvider, z as DEFAULT_PROVIDER } from "./model-selection-d9ikTAJM.js";
+import { A as chunkMarkdownTextWithMode, B as MediaFetchError, C as markdownToIR, D as wrapFetchWithAbortSignal, E as resolveFetch, F as findFenceSpanAt, G as SILENT_REPLY_TOKEN, H as fetchWithSsrFGuard, I as isSafeFenceBreak, K as isSilentReplyText, L as parseFenceSpans, M as chunkTextWithMode, N as resolveChunkMode, O as chunkByNewline, P as resolveTextChunkLimit, R as loadWebMedia, S as chunkMarkdownIR, T as resolveMarkdownTableMode, U as resolveChannelMediaMaxBytes, V as fetchRemoteMedia, W as HEARTBEAT_TOKEN, _ as sendReadReceiptSignal, a as filterMessagingToolDuplicates, b as signalRpcRequest, c as createReplyToModeFilterForChannel, d as normalizeChannelTargetInput, f as normalizeTargetForProvider, g as sendMessageSignal, h as parseInlineDirectives$1, i as applyReplyThreading, j as chunkText, k as chunkMarkdownText, l as resolveReplyToMode, m as splitMediaFromOutput, n as normalizeReplyPayloadsForDelivery, o as isRenderablePayload, p as parseReplyDirectives, r as applyReplyTagsToPayload, s as shouldSuppressMessagingToolReplies, t as deliverOutboundPayloads, u as buildTargetResolverSignature, v as sendTypingSignal, w as markdownToIRWithMeta, x as streamSignalEvents, y as signalCheck, z as loadWebMediaRaw } from "./deliver-BmQEkBeJ.js";
+import { $ as sanitizeGoogleTurnOrdering, $n as normalizeWhatsAppTarget, $t as resolveSessionResetPolicy, A as resolveSandboxRuntimeStatus, An as normalizeSlackMessagingTarget, Ar as resolveToolsBySender, At as isGifMedia, B as applySkillEnvOverrides, Bn as resolveDiscordGroupRequireMention, Bt as updateLastRoute, C as isRawApiErrorPayload, Cn as listSlackDirectoryGroupsFromConfig, Cr as listEnabledDiscordAccounts, D as sanitizeUserFacingText, Dn as listWhatsAppDirectoryGroupsFromConfig, Dr as resolveChannelGroupPolicy, Dt as getFileExtension, E as parseImageSizeError, En as listTelegramDirectoryPeersFromConfig, Er as normalizeDiscordToken, Et as extensionForMime, F as buildWorkspaceSkillCommandSpecs, Fn as requireTargetKind, Ft as appendAssistantMessageToSessionTranscript, G as expandPolicyWithPluginGroups, Gn as resolveIMessageGroupToolPolicy, Gt as deliveryContextFromSession, H as resolveSandboxConfigForAgent, Hn as resolveGoogleChatGroupRequireMention, Ht as updateSessionStoreEntry, I as buildWorkspaceSkillSnapshot, In as getChannelDock, J as resolveToolProfilePolicy, Jn as resolveTelegramGroupRequireMention, Jt as normalizeDeliveryContext, K as expandToolGroups, Kn as resolveSlackGroupRequireMention, Kt as deliveryContextKey, L as loadWorkspaceSkillEntries, Ln as listChannelDocks, Lt as loadSessionStore, M as registerBrowserRoutes, Mn as resolveSlackChannelId, Mt as MAX_IMAGE_BYTES, N as resolveBrowserConfig, Nn as buildMessagingTarget, O as ensureSandboxWorkspaceForSession, On as listWhatsAppDirectoryPeersFromConfig, Or as resolveChannelGroupRequireMention, Ot as imageMimeFromFormat, P as resolveProfile, Pn as ensureTargetId, Pt as mediaKindFromMime, Q as resolveBootstrapMaxChars, Qn as isWhatsAppGroupJid, Qt as resolveChannelResetConfig, R as resolveSkillsPromptForRun, Rn as resolveBlueBubblesGroupRequireMention, Rt as readSessionUpdatedAt, S as isRateLimitAssistantError, Sn as listDiscordDirectoryPeersFromConfig, Sr as listDiscordAccountIds, T as parseImageDimensionError, Tn as listTelegramDirectoryGroupsFromConfig, Tr as resolveDiscordAccount, Tt as detectMime, U as buildPluginToolGroups, Un as resolveGoogleChatGroupToolPolicy, Ut as isCacheEnabled, V as applySkillEnvOverridesFromSnapshot, Vn as resolveDiscordGroupToolPolicy, Vt as updateSessionStore, W as collectExplicitAllowlist, Wn as resolveIMessageGroupRequireMention, Wt as resolveCacheTtlMs$1, X as buildBootstrapContextFiles, Xn as resolveWhatsAppGroupRequireMention, Xt as resolveSessionKey$1, Y as stripPluginOnlyAllowlist, Yn as resolveTelegramGroupToolPolicy, Yt as normalizeSessionDeliveryFields, Z as ensureSessionHeader, Zn as resolveWhatsAppGroupToolPolicy, Zt as evaluateSessionFreshness, _ as isCompactionFailureError, _n as GATEWAY_CLIENT_NAMES, _r as resolveDefaultSignalAccountId, a as isMessagingToolDuplicateNormalized, an as resolveConversationLabel, ar as listBindings, at as normalizeThinkLevel, b as isFailoverErrorMessage, bn as normalizeChannelId$1, br as resolveDefaultIMessageAccountId, c as downgradeOpenAIReasoningBlocks, cn as isDeliverableMessageChannel, cr as listSlackAccountIds, ct as resolveResponseUsageMode, d as classifyFailoverReason, dn as listDeliverableMessageChannels, dr as resolveSlackReplyToMode, dt as getMediaDir, en as resolveSessionResetType, er as listEnabledTelegramAccounts, et as formatThinkingLevels, f as formatAssistantErrorText, fn as normalizeMessageChannel, fr as resolveSlackAppToken, ft as saveMediaBuffer, g as isCloudCodeAssistFormatError, gn as GATEWAY_CLIENT_MODES, gr as listSignalAccountIds, h as isAuthAssistantError, hn as GATEWAY_CLIENT_IDS, hr as listEnabledSignalAccounts, in as deriveSessionMetaPatch, ir as resolveTelegramToken, it as normalizeReasoningLevel, j as createBrowserRouteContext, jn as parseSlackTarget, jt as kindFromMime, k as resolveSandboxContext, kn as looksLikeSlackTargetId, kr as resolveChannelGroupToolsPolicy, kt as isAudioFileName, l as isAntigravityClaude, ln as isInternalMessageChannel, lr as resolveDefaultSlackAccountId, lt as supportsXHighThinking, m as getApiErrorPayloadFingerprint, mn as resolveMessageChannel, mr as normalizeChatType, n as validateGeminiTurns, nn as DEFAULT_RESET_TRIGGERS, nr as resolveDefaultTelegramAccountId, nt as listThinkingLevels, o as normalizeTextForComparison, on as resolveGroupSessionKey, or as buildSlackThreadingToolContext, ot as normalizeUsageDisplay, p as formatRawAssistantErrorForUi, pn as resolveGatewayMessageChannel, pr as resolveSlackBotToken, pt as SsrFBlockedError, q as normalizeToolName, qn as resolveSlackGroupToolPolicy, qt as mergeDeliveryContext, r as pickFallbackThinkingLevel, rn as resolveMainSessionKey, rr as resolveTelegramAccount, rt as normalizeElevatedLevel, s as sanitizeSessionMessagesImages, sn as INTERNAL_MESSAGE_CHANNEL, sr as listEnabledSlackAccounts, st as normalizeVerboseLevel, t as validateAnthropicTurns, tn as resolveThreadFlag, tr as listTelegramAccountIds, tt as formatXHighModelHint, u as isGoogleModelApi, un as isMarkdownCapableMessageChannel, ur as resolveSlackAccount, ut as extractOriginalFilename, v as isContextOverflowError, vn as getChannelPlugin, vr as resolveSignalAccount, vt as sanitizeImageBlocks, w as isTimeoutErrorMessage, wn as listSlackDirectoryPeersFromConfig, wr as resolveDefaultDiscordAccountId, wt as resizeToJpeg, x as isLikelyContextOverflowError, xn as listDiscordDirectoryGroupsFromConfig, xr as resolveIMessageAccount, xt as getImageMetadata, y as isFailoverAssistantError, yn as listChannelPlugins, yr as listIMessageAccountIds, yt as sanitizeToolResultImages, z as resolvePluginSkillDirs, zn as resolveBlueBubblesGroupToolPolicy, zt as recordSessionMetaFromInbound } from "./pi-embedded-helpers-DL9O6zNU.js";
+import { A as listProfilesForProvider, B as getShellPathFromLoginShell, D as resolveApiKeyForProfile, E as markAuthProfileUsed, F as resolveOpenClawAgentDir, G as isTruthyEnvValue, H as resolveShellEnvFallbackTimeoutMs, I as resolveAuthProfileDisplayLabel, K as parseBooleanValue$1, L as DEFAULT_CONTEXT_TOKENS, M as ensureAuthProfileStore, P as resolveAuthStorePathForDisplay, R as DEFAULT_MODEL, S as resolveAuthProfileOrder, T as markAuthProfileFailure, _ as getCustomProviderApiKey, a as normalizeProviderId, b as resolveEnvApiKey, c as resolveDefaultModelForAgent, d as normalizeGoogleModelId, g as getApiKeyForModel, i as modelKey, j as markAuthProfileGood, l as resolveModelRefFromString, n as buildModelAliasIndex, o as parseModelRef, r as isCliProvider, s as resolveConfiguredModelRef, t as buildAllowedModelSet, u as resolveThinkingDefault, v as requireApiKey, w as isProfileInCooldown, x as resolveModelAuthMode, y as resolveApiKeyForProvider, z as DEFAULT_PROVIDER } from "./model-selection-B0Ls_TS7.js";
 import { n as resolveCliName, t as formatCliCommand } from "./command-format-CFzL448l.js";
 import { a as saveJsonFile, i as loadJsonFile } from "./github-copilot-token-BoPqI-5_.js";
-import { a as resolveStorePath, i as resolveSessionTranscriptsDirForAgent, n as resolveSessionFilePath, r as resolveSessionTranscriptPath } from "./paths-Bkjq_KcG.js";
+import { a as resolveStorePath, i as resolveSessionTranscriptsDirForAgent, n as resolveSessionFilePath, r as resolveSessionTranscriptPath } from "./paths-DZjSpkSz.js";
 import { t as emitSessionTranscriptUpdate } from "./transcript-events-DOI14YeV.js";
 import { D as formatErrorMessage$1, E as extractErrorCode, O as formatUncaughtError, T as rawDataToString, h as ensureChromeExtensionRelayServer, y as DEFAULT_AI_SNAPSHOT_MAX_CHARS } from "./chrome-DMuEXuKT.js";
-import { i as retryAsync, n as resolveMemorySearchConfig, r as resolveRetryConfig } from "./manager-Cl43Sf0t.js";
-import { _ as ensureOpenClawModelsJson, a as resolveProviderVisionModelFromConfig, c as extractThinkingFromTaggedStream, d as inferToolMetaFromArgs, f as promoteThinkingTagsToBlocks, g as resolveToolDisplay, h as stripThinkingTagsFromText, i as decodeDataUrl, l as extractThinkingFromTaggedText, m as stripMinimaxToolCallXml, n as coerceImageAssistantText, o as extractAssistantText$1, p as stripDowngradedToolCallText, r as coerceImageModelConfig, s as extractAssistantThinking, t as describeImageWithModel, u as formatReasoningMessage, v as minimaxUnderstandImage } from "./image-suEID2rU.js";
+import { i as retryAsync, n as resolveMemorySearchConfig, r as resolveRetryConfig } from "./manager-Cvkzjsvj.js";
+import { _ as ensureOpenClawModelsJson, a as resolveProviderVisionModelFromConfig, c as extractThinkingFromTaggedStream, d as inferToolMetaFromArgs, f as promoteThinkingTagsToBlocks, g as resolveToolDisplay, h as stripThinkingTagsFromText, i as decodeDataUrl, l as extractThinkingFromTaggedText, m as stripMinimaxToolCallXml, n as coerceImageAssistantText, o as extractAssistantText$1, p as stripDowngradedToolCallText, r as coerceImageModelConfig, s as extractAssistantThinking, t as describeImageWithModel, u as formatReasoningMessage, v as minimaxUnderstandImage } from "./image-BYl_Fv7D.js";
 import { i as discoverModels, r as discoverAuthStorage } from "./pi-model-discovery-CLgDNnGq.js";
 import { t as redactSensitiveText } from "./redact-wH73ib3-.js";
 import { c as listMemoryFiles, l as normalizeExtraMemoryPaths } from "./sqlite-CqVsQPIl.js";
-import { a as getStatusCode$1, i as formatError$1, n as waitForWebLogin, o as waitForWaConnection, r as createWaSocket, t as startWebLoginWithQr } from "./login-qr-jcX3TXSQ.js";
+import { a as getStatusCode$1, i as formatError$1, n as waitForWebLogin, o as waitForWaConnection, r as createWaSocket, t as startWebLoginWithQr } from "./login-qr-52uzpShE.js";
 import { createRequire } from "node:module";
 import { z } from "zod";
 import * as os$1 from "node:os";
@@ -11615,7 +11615,7 @@ async function createModelSelectionState(params) {
 		}
 	}
 	if (sessionEntry && sessionStore && sessionKey && sessionEntry.authProfileOverride) {
-		const { ensureAuthProfileStore } = await import("./auth-profiles-D_uMO9Be.js");
+		const { ensureAuthProfileStore } = await import("./auth-profiles-43nd3ecd.js");
 		const profile = ensureAuthProfileStore(void 0, { allowKeychainPrompt: false }).profiles[sessionEntry.authProfileOverride];
 		const providerKey = normalizeProviderId(provider);
 		if (!profile || normalizeProviderId(profile.provider) !== providerKey) await clearSessionAuthProfileOverride({
@@ -15151,7 +15151,7 @@ async function getMemorySearchManager(params) {
 		const cached = QMD_MANAGER_CACHE.get(cacheKey);
 		if (cached) return { manager: cached };
 		try {
-			const { QmdMemoryManager } = await import("./qmd-manager-DvkA01DP.js");
+			const { QmdMemoryManager } = await import("./qmd-manager-CzHrVdju.js");
 			const primary = await QmdMemoryManager.create({
 				cfg: params.cfg,
 				agentId: params.agentId,
@@ -15161,7 +15161,7 @@ async function getMemorySearchManager(params) {
 				const wrapper = new FallbackMemoryManager({
 					primary,
 					fallbackFactory: async () => {
-						const { MemoryIndexManager } = await import("./manager-Be5qbYYO.js");
+						const { MemoryIndexManager } = await import("./manager-BDQ4lk-c.js");
 						return await MemoryIndexManager.get(params);
 					}
 				}, () => QMD_MANAGER_CACHE.delete(cacheKey));
@@ -15174,7 +15174,7 @@ async function getMemorySearchManager(params) {
 		}
 	}
 	try {
-		const { MemoryIndexManager } = await import("./manager-Be5qbYYO.js");
+		const { MemoryIndexManager } = await import("./manager-BDQ4lk-c.js");
 		return { manager: await MemoryIndexManager.get(params) };
 	} catch (err) {
 		return {
@@ -19985,7 +19985,7 @@ async function routeReply(params) {
 	const resolvedReplyToId = replyToId ?? (channelId === "slack" && threadId != null && threadId !== "" ? String(threadId) : void 0);
 	const resolvedThreadId = channelId === "slack" ? null : threadId ?? null;
 	try {
-		const { deliverOutboundPayloads } = await import("./deliver-lIBbYbqM.js");
+		const { deliverOutboundPayloads } = await import("./deliver-Dm-yWFLD.js");
 		return {
 			ok: true,
 			messageId: (await deliverOutboundPayloads({
@@ -23319,7 +23319,7 @@ async function describeStickerImage(params) {
 	logVerbose(`telegram: describing sticker with ${provider}/${model}`);
 	try {
 		const buffer = await fs$1.readFile(imagePath);
-		const { describeImageWithModel } = await import("./image-5vPO_I57.js");
+		const { describeImageWithModel } = await import("./image-DOJmgQNY.js");
 		return (await describeImageWithModel({
 			buffer,
 			fileName: "sticker.webp",
@@ -23676,7 +23676,7 @@ function createWhatsAppLoginTool() {
 			force: Type.Optional(Type.Boolean())
 		}),
 		execute: async (_toolCallId, args) => {
-			const { startWebLoginWithQr, waitForWebLogin } = await import("./login-qr-DBIOIn_G.js");
+			const { startWebLoginWithQr, waitForWebLogin } = await import("./login-qr--oqOkSFr.js");
 			if ((args?.action ?? "start") === "wait") {
 				const result = await waitForWebLogin({ timeoutMs: typeof args.timeoutMs === "number" ? args.timeoutMs : void 0 });
 				return {
@@ -35714,30 +35714,6 @@ function buildSystemPromptReport(params) {
 
 //#endregion
 //#region src/agents/system-prompt.ts
-function buildSkillsSection(params) {
-	if (params.isMinimal) return [];
-	const trimmed = params.skillsPrompt?.trim();
-	if (!trimmed) return [];
-	return [
-		"## Skills (mandatory)",
-		"Before replying: scan <available_skills> <description> entries.",
-		`- If exactly one skill clearly applies: read its SKILL.md at <location> with \`${params.readToolName}\`, then follow it.`,
-		"- If multiple could apply: choose the most specific one, then read/follow it.",
-		"- If none clearly apply: do not read any SKILL.md.",
-		"Constraints: never read more than one skill up front; only read after selecting.",
-		trimmed,
-		""
-	];
-}
-function buildMemorySection(params) {
-	if (params.isMinimal) return [];
-	if (!params.availableTools.has("memory_search") && !params.availableTools.has("memory_get")) return [];
-	const lines = ["## Memory Recall", "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md; then use memory_get to pull only the needed lines. If low confidence after search, say you checked."];
-	if (params.citationsMode === "off") lines.push("Citations are disabled: do not mention file paths or line numbers in replies unless the user explicitly asks.");
-	else lines.push("Citations: include Source: <path#line> when it helps the user verify memory snippets.");
-	lines.push("");
-	return lines;
-}
 function buildUserIdentitySection(ownerLine, isMinimal) {
 	if (!ownerLine || isMinimal) return [];
 	return [
@@ -35793,21 +35769,6 @@ function buildVoiceSection(params) {
 	return [
 		"## Voice (TTS)",
 		hint,
-		""
-	];
-}
-function buildDocsSection(params) {
-	const docsPath = params.docsPath?.trim();
-	if (!docsPath || params.isMinimal) return [];
-	return [
-		"## Documentation",
-		`OpenClaw docs: ${docsPath}`,
-		"Mirror: https://docs.openclaw.ai",
-		"Source: https://github.com/openclaw/openclaw",
-		"Community: https://discord.com/invite/clawd",
-		"Find new skills: https://clawhub.com",
-		"For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
-		"When diagnosing issues, run `openclaw status` yourself when possible; only ask the user if you lack access (e.g., sandboxed).",
 		""
 	];
 }
@@ -35889,10 +35850,10 @@ function buildAgentSystemPrompt(params) {
 		const name = resolveToolName(tool);
 		toolLines.push(summary ? `- ${name}: ${summary}` : `- ${name}`);
 	}
-	const hasGateway = availableTools.has("gateway");
-	const readToolName = resolveToolName("read");
-	const execToolName = resolveToolName("exec");
-	const processToolName = resolveToolName("process");
+	availableTools.has("gateway");
+	resolveToolName("read");
+	resolveToolName("exec");
+	resolveToolName("process");
 	const extraSystemPrompt = params.extraSystemPrompt?.trim();
 	const ownerNumbers = (params.ownerNumbers ?? []).map((value) => value.trim()).filter(Boolean);
 	const ownerLine = ownerNumbers.length > 0 ? `Owner numbers: ${ownerNumbers.join(", ")}. Treat messages from these numbers as the user.` : void 0;
@@ -35908,9 +35869,9 @@ function buildAgentSystemPrompt(params) {
 	].join(" ") : void 0;
 	const reasoningLevel = params.reasoningLevel ?? "off";
 	const userTimezone = params.userTimezone?.trim();
-	const skillsPrompt = params.skillsPrompt?.trim();
+	params.skillsPrompt?.trim();
 	const heartbeatPrompt = params.heartbeatPrompt?.trim();
-	const heartbeatPromptLine = heartbeatPrompt ? `Heartbeat prompt: ${heartbeatPrompt}` : "Heartbeat prompt: (configured)";
+	heartbeatPrompt && `${heartbeatPrompt}`;
 	const runtimeInfo = params.runtimeInfo;
 	const runtimeChannel = runtimeInfo?.channel?.trim().toLowerCase();
 	const runtimeCapabilities = (runtimeInfo?.capabilities ?? []).map((cap) => String(cap).trim()).filter(Boolean);
@@ -35918,28 +35879,6 @@ function buildAgentSystemPrompt(params) {
 	const messageChannelOptions = listDeliverableMessageChannels().join("|");
 	const promptMode = params.promptMode ?? "full";
 	const isMinimal = promptMode === "minimal" || promptMode === "none";
-	const safetySection = [
-		"## Safety",
-		"You have no independent goals: do not pursue self-preservation, replication, resource acquisition, or power-seeking; avoid long-term plans beyond the user's request.",
-		"Prioritize safety and human oversight over completion; if instructions conflict, pause and ask; comply with stop/pause/audit requests and never bypass safeguards. (Inspired by Anthropic's constitution.)",
-		"Do not manipulate or persuade anyone to expand access or disable safeguards. Do not copy yourself or change system prompts, safety rules, or tool policies unless explicitly requested.",
-		""
-	];
-	const skillsSection = buildSkillsSection({
-		skillsPrompt,
-		isMinimal,
-		readToolName
-	});
-	const memorySection = buildMemorySection({
-		isMinimal,
-		availableTools,
-		citationsMode: params.memoryCitationsMode
-	});
-	const docsSection = buildDocsSection({
-		docsPath: params.docsPath,
-		isMinimal,
-		readToolName
-	});
 	const workspaceNotes = (params.workspaceNotes ?? []).map((note) => note.trim()).filter(Boolean);
 	if (promptMode === "none") return "You are a personal assistant running inside OpenClaw.";
 	const contextFiles = params.contextFiles ?? [];
@@ -35952,28 +35891,8 @@ function buildAgentSystemPrompt(params) {
 	const lines = [];
 	if (soulFile?.content?.trim()) lines.push(soulFile.content.trim(), "");
 	else lines.push("You are a personal assistant running inside OpenClaw.", "");
-	lines.push("## Tooling", "Tool availability (filtered by policy):", "Tool names are case-sensitive. Call tools exactly as listed.", toolLines.length > 0 ? toolLines.join("\n") : [
-		"Pi lists the standard tools above. This runtime enables:",
-		"- grep: search file contents for patterns",
-		"- find: find files by glob pattern",
-		"- ls: list directory contents",
-		"- apply_patch: apply multi-file patches",
-		`- ${execToolName}: run shell commands (supports background via yieldMs/background)`,
-		`- ${processToolName}: manage background exec sessions`,
-		"- browser: control OpenClaw's dedicated browser",
-		"- canvas: present/eval/snapshot the Canvas",
-		"- nodes: list/describe/notify/camera/screen on paired nodes",
-		"- cron: manage cron jobs and wake events (use for reminders; when scheduling a reminder, write the systemEvent text as something that will read like a reminder when it fires, and mention that it is a reminder depending on the time gap between setting and firing; include recent context in reminder text if appropriate)",
-		"- sessions_list: list sessions",
-		"- sessions_history: fetch session history",
-		"- sessions_send: send to another session",
-		"- session_status: show usage/time/model state and answer \"what model are we using?\""
-	].join("\n"), "TOOLS.md does not control tool availability; it is user guidance for how to use external tools.", "If a task is more complex or takes longer, spawn a sub-agent. It will do the work for you and ping you when it's done. You can always check up on it.", "", "## Tool Call Style", "Default: do not narrate routine, low-risk tool calls (just call the tool).", "Narrate only when it helps: multi-step work, complex/challenging problems, sensitive actions (e.g., deletions), or when the user explicitly asks.", "Keep narration brief and value-dense; avoid repeating obvious steps.", "Use plain human language for narration unless in a technical context.", "", ...safetySection, "## OpenClaw CLI Quick Reference", "OpenClaw is controlled via subcommands. Do not invent commands.", "To manage the Gateway daemon service (start/stop/restart):", "- openclaw gateway status", "- openclaw gateway start", "- openclaw gateway stop", "- openclaw gateway restart", "If unsure, ask the user to run `openclaw help` (or `openclaw gateway --help`) and paste the output.", "", ...skillsSection, ...memorySection, hasGateway && !isMinimal ? "## OpenClaw Self-Update" : "", hasGateway && !isMinimal ? [
-		"Get Updates (self-update) is ONLY allowed when the user explicitly asks for it.",
-		"Do not run config.apply or update.run unless the user explicitly requests an update or config change; if it's not explicit, ask first.",
-		"Actions: config.get, config.schema, config.apply (validate + write full config, then restart), update.run (update deps or git, then restart).",
-		"After restart, OpenClaw pings the last active session automatically."
-	].join("\n") : "", hasGateway && !isMinimal ? "" : "", "", params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal ? "## Model Aliases" : "", params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal ? "Prefer aliases when specifying model overrides; full provider/model is also accepted." : "", params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal ? params.modelAliasLines.join("\n") : "", params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal ? "" : "", userTimezone ? "If you need the current date, time, or day of week, run session_status (📊 session_status)." : "", "## Workspace", `Your working directory is: ${params.workspaceDir}`, "Treat this directory as the single global workspace for file operations unless explicitly instructed otherwise.", ...workspaceNotes, "", ...docsSection, params.sandboxInfo?.enabled ? "## Sandbox" : "", params.sandboxInfo?.enabled ? [
+	lines.push("## Tooling", "Tool names are case-sensitive. Call tools exactly as listed.", toolLines.length > 0 ? toolLines.join("\n") : "", "");
+	lines.push(userTimezone ? "If you need the current date, time, or day of week, run session_status (📊 session_status)." : "", "## Workspace", `Your working directory is: ${params.workspaceDir}`, "Treat this directory as the single global workspace for file operations unless explicitly instructed otherwise.", ...workspaceNotes, "", params.sandboxInfo?.enabled ? "## Sandbox" : "", params.sandboxInfo?.enabled ? [
 		"You are running in a sandboxed runtime (tools execute in Docker).",
 		"Some tools may be unavailable due to sandbox policy.",
 		"Sub-agents stay sandboxed (no elevated/host access). Need outside-sandbox read/write? Don't spawn; ask first.",
@@ -35986,7 +35905,7 @@ function buildAgentSystemPrompt(params) {
 		params.sandboxInfo.elevated?.allowed ? "User can toggle with /elevated on|off|ask|full." : "",
 		params.sandboxInfo.elevated?.allowed ? "You may also send /elevated on|off|ask|full when needed." : "",
 		params.sandboxInfo.elevated?.allowed ? `Current elevated level: ${params.sandboxInfo.elevated.defaultLevel} (ask runs exec on host with approvals; full auto-approves).` : ""
-	].filter(Boolean).join("\n") : "", params.sandboxInfo?.enabled ? "" : "", ...buildUserIdentitySection(ownerLine, isMinimal), ...buildTimeSection({ userTimezone }), "## Workspace Files (injected)", "These user-editable files are loaded by OpenClaw and included below in Project Context.", "", ...buildReplyTagsSection(isMinimal), ...buildMessagingSection({
+	].filter(Boolean).join("\n") : "", params.sandboxInfo?.enabled ? "" : "", ...buildUserIdentitySection(ownerLine, isMinimal), ...buildTimeSection({ userTimezone }), ...buildReplyTagsSection(isMinimal), ...buildMessagingSection({
 		isMinimal,
 		availableTools,
 		messageChannelOptions,
@@ -36029,8 +35948,6 @@ function buildAgentSystemPrompt(params) {
 		lines.push("");
 		for (const file of remainingContextFiles) lines.push(`## ${file.path}`, "", file.content, "");
 	}
-	if (!isMinimal) lines.push("## Silent Replies", `When you have nothing to say, respond with ONLY: ${SILENT_REPLY_TOKEN}`, "", "⚠️ Rules:", "- It must be your ENTIRE message — nothing else", `- Never append it to an actual response (never include "${SILENT_REPLY_TOKEN}" in real replies)`, "- Never wrap it in markdown or code blocks", "", `❌ Wrong: "Here's help... ${SILENT_REPLY_TOKEN}"`, `❌ Wrong: "${SILENT_REPLY_TOKEN}"`, `✅ Right: ${SILENT_REPLY_TOKEN}`, "");
-	if (!isMinimal) lines.push("## Heartbeats", heartbeatPromptLine, "If you receive a heartbeat poll (a user message matching the heartbeat prompt above), and there is nothing that needs attention, reply exactly:", "HEARTBEAT_OK", "OpenClaw treats a leading/trailing \"HEARTBEAT_OK\" as a heartbeat ack (and may discard it).", "If something needs attention, do NOT include \"HEARTBEAT_OK\"; reply with the alert text instead.", "");
 	lines.push("## Runtime", buildRuntimeLine(runtimeInfo, runtimeChannel, runtimeCapabilities, params.defaultThinkLevel), `Reasoning: ${reasoningLevel} (hidden unless on/stream). Toggle /reasoning; /status shows Reasoning when enabled.`);
 	return lines.filter(Boolean).join("\n");
 }
