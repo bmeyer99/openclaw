@@ -381,9 +381,9 @@ export function buildAgentSystemPrompt(params: {
   }
 
   // STRIPPED (2026-02-16): Tooling summary, Tool Call Style, Safety, CLI Quick Ref,
-  // Skills, Memory tool, Self-Update, Model Aliases, Documentation.
-  // Tool schemas go via API tools param. Everything else is in SOUL or RG.
-  // Kept: Workspace, Reply Tags, Messaging, Silent Replies, Heartbeats, Runtime.
+  // Skills, Memory tool, Self-Update, Model Aliases, Documentation, Context Source,
+  // Silent Replies, Heartbeats. All moved to RG (soul/protocol DocObjects).
+  // Kept: Tooling list, Workspace, Reply Tags, Messaging, Runtime (all runtime-dependent).
 
   // Tooling section — only the tool list (required by API), no guidance boilerplate
   lines.push(
@@ -449,13 +449,7 @@ export function buildAgentSystemPrompt(params: {
     ...buildTimeSection({
       userTimezone,
     }),
-    "## Context Source",
-    "Context is assembled dynamically by Raggedy Graphy (RG) via TPS DocObjects in Spanner.",
-    "Your identity (SOUL), tools config, and user profile are stored as DocObjects (type=soul) and injected verbatim each turn.",
-    "Memories, knowledge, tasks, search results, and Slack history are sourced per-turn based on the conversation.",
-    "To update persistent context: use ood_create_object / ood_update_object (DocObjects) or memory_write (memories).",
-    "To read context: use agfs_read, ood_resolve, ood_search, smart_search, memory_search.",
-    "",
+    // Context Source section moved to protocol DocObject (type=protocol, always included via RG)
     ...buildReplyTagsSection(isMinimal),
     ...buildMessagingSection({
       isMinimal,
@@ -516,36 +510,9 @@ export function buildAgentSystemPrompt(params: {
     }
   }
 
-  // Skip silent replies for subagent/none modes
-  if (!isMinimal) {
-    lines.push(
-      "## Silent Replies",
-      `When you have nothing to say, respond with ONLY: ${SILENT_REPLY_TOKEN}`,
-      "",
-      "⚠️ Rules:",
-      "- It must be your ENTIRE message — nothing else",
-      `- Never append it to an actual response (never include "${SILENT_REPLY_TOKEN}" in real replies)`,
-      "- Never wrap it in markdown or code blocks",
-      "",
-      `❌ Wrong: "Here's help... ${SILENT_REPLY_TOKEN}"`,
-      `❌ Wrong: "${SILENT_REPLY_TOKEN}"`,
-      `✅ Right: ${SILENT_REPLY_TOKEN}`,
-      "",
-    );
-  }
+  // Silent Replies moved to protocol DocObject (type=protocol, always included via RG)
 
-  // Skip heartbeats for subagent/none modes
-  if (!isMinimal) {
-    lines.push(
-      "## Heartbeats",
-      heartbeatPromptLine,
-      "If you receive a heartbeat poll (a user message matching the heartbeat prompt above), and there is nothing that needs attention, reply exactly:",
-      "HEARTBEAT_OK",
-      'OpenClaw treats a leading/trailing "HEARTBEAT_OK" as a heartbeat ack (and may discard it).',
-      'If something needs attention, do NOT include "HEARTBEAT_OK"; reply with the alert text instead.',
-      "",
-    );
-  }
+  // Heartbeats moved to protocol DocObject (type=protocol, always included via RG)
 
   lines.push(
     "## Runtime",
