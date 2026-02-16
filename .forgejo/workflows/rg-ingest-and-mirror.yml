@@ -1,0 +1,123 @@
+# Forgejo Action: RG Code Ingestion + GitHub Mirror
+# Place in each repo at .forgejo/workflows/rg-ingest-and-mirror.yml
+#
+# Required org secrets (set at no13 org level):
+#   MIRROR_TOKEN  - GitHub PAT with repo push access
+#   MIRROR_ORG    - GitHub org/user name (e.g. bmeyer99)
+#
+# Optional org secrets:
+#   RG_MCP_URL    - RG MCP endpoint (default: http://localhost:8201/mcp)
+#
+# Runner label: "local" (runs directly on rg-vm host for filesystem access)
+
+name: RG Ingest & GitHub Mirror
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ingest-rg:
+    name: Ingest into Raggedy Graphy
+    runs-on: local
+    steps:
+      - name: Checkout code
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Determine collection name
+        id: meta
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          echo "collection=${REPO_NAME}_code" >> "$GITHUB_OUTPUT"
+          echo "repo_name=${REPO_NAME}" >> "$GITHUB_OUTPUT"
+          echo "📦 Repo: ${REPO_NAME} → Collection: ${REPO_NAME}_code"
+
+      - name: Sync to RG sandbox
+        run: |
+          # RG staging runs with ProtectSystem=strict, ReadWritePaths=/opt/raggedy-graphy-staging
+          DEST="/opt/raggedy-graphy-staging/repos/${{ steps.meta.outputs.repo_name }}"
+          sudo mkdir -p /opt/raggedy-graphy-staging/repos
+          sudo rsync -a --delete \
+            --exclude=node_modules --exclude=.git --exclude=dist \
+            --exclude=venv --exclude=__pycache__ --exclude=.next \
+            --exclude=.forgejo --exclude=build --exclude=coverage \
+            "${GITHUB_WORKSPACE}/" "${DEST}/"
+          sudo chown -R rg:rg /opt/raggedy-graphy-staging/repos
+          echo "✅ Synced $(find "${DEST}" -type f | wc -l) files to ${DEST}"
+
+      - name: Ingest into RG
+        run: |
+          COLLECTION="${{ steps.meta.outputs.collection }}"
+          REPO_PATH="/opt/raggedy-graphy-staging/repos/${{ steps.meta.outputs.repo_name }}"
+          RG_URL="${{ secrets.RG_MCP_URL }}"
+          RG_URL="${RG_URL:-http://localhost:8201/mcp}"
+
+          python3 << PYEOF
+          import json, urllib.request, sys, time
+
+          url = "${RG_URL}"
+          hdrs = {"Content-Type": "application/json", "Accept": "application/json, text/event-stream"}
+
+          def call(method, params, timeout=30):
+              body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
+              req = urllib.request.Request(url, data=body, headers=hdrs)
+              return json.loads(urllib.request.urlopen(req, timeout=timeout).read().decode())
+
+          # Initialize MCP session
+          r = call("initialize", {
+              "protocolVersion": "2025-03-26", "capabilities": {},
+              "clientInfo": {"name": "forgejo-action", "version": "1.0.0"}
+          })
+          print(f"✅ MCP session initialized")
+
+          # Delete old collection (ignore errors if it doesn't exist)
+          try:
+              r = call("tools/call", {"name": "delete_collection",
+                  "arguments": {"collection": "${COLLECTION}", "confirm": True}})
+              content = r.get("result", {}).get("content", [{}])
+              print(f"🗑  Delete collection: {content[0].get('text', 'ok')[:200]}")
+          except Exception as e:
+              print(f"⚠️  Delete collection (may not exist): {e}")
+
+          # Ingest repo (long timeout — large repos take minutes)
+          print(f"🔄 Ingesting ${REPO_PATH} → ${COLLECTION} ...")
+          sys.stdout.flush()
+          start = time.time()
+          r = call("tools/call", {"name": "ingest_repo",
+              "arguments": {"path": "${REPO_PATH}", "collection": "${COLLECTION}"}}, timeout=600)
+          elapsed = time.time() - start
+          content = r.get("result", {}).get("content", [{}])
+          text = content[0].get("text", str(r))[:500]
+          print(f"✅ Ingestion complete in {elapsed:.0f}s: {text}")
+          PYEOF
+
+  mirror-github:
+    name: Mirror to GitHub
+    runs-on: local
+    steps:
+      - name: Checkout code
+        uses: https://code.forgejo.org/actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitHub
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          MIRROR_ORG: ${{ secrets.MIRROR_ORG }}
+        run: |
+          if [ -z "${MIRROR_TOKEN}" ]; then
+            echo "⚠️  MIRROR_TOKEN not set — skipping GitHub mirror"
+            exit 0
+          fi
+
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          ORG="${MIRROR_ORG:-bmeyer99}"
+          MIRROR_URL="https://${MIRROR_TOKEN}@github.com/${ORG}/${REPO_NAME}.git"
+
+          echo "🔄 Mirroring to GitHub: ${ORG}/${REPO_NAME}"
+
+          git remote add github "${MIRROR_URL}" 2>/dev/null || git remote set-url github "${MIRROR_URL}"
+          git push github --all --force
+          git push github --tags --force
+
+          echo "✅ Mirrored to github.com/${ORG}/${REPO_NAME}"
