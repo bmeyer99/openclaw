@@ -449,7 +449,13 @@ export function buildAgentSystemPrompt(params: {
     ...buildTimeSection({
       userTimezone,
     }),
-    // Workspace Files header removed — no static files injected, all from RG
+    "## Context Source",
+    "Context is assembled dynamically by Raggedy Graphy (RG) via TPS DocObjects in Spanner.",
+    "Your identity (SOUL), tools config, and user profile are stored as DocObjects (type=soul) and injected verbatim each turn.",
+    "Memories, knowledge, tasks, search results, and Slack history are sourced per-turn based on the conversation.",
+    "To update persistent context: use ood_create_object / ood_update_object (DocObjects) or memory_write (memories).",
+    "To read context: use agfs_read, ood_resolve, ood_search, smart_search, memory_search.",
+    "",
     ...buildReplyTagsSection(isMinimal),
     ...buildMessagingSection({
       isMinimal,
