@@ -141,6 +141,7 @@ export const AgentDefaultsSchema = z
         enabled: z.boolean().optional(),
         mcpServer: z.string().optional(),
         mcpTool: z.string().optional(),
+        profile: z.string().optional(),
         timeoutMs: z.number().int().positive().optional(),
         budgetTokens: z.number().int().positive().optional(),
       })
