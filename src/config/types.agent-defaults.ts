@@ -210,6 +210,8 @@ export type AgentDefaultsConfig = {
     mcpServer?: string;
     /** MCP tool name to call. Default: "build_agent_context". */
     mcpTool?: string;
+    /** RG profile name used for context resolution. */
+    profile?: string;
     /** Timeout in milliseconds. Default: 10000. */
     timeoutMs?: number;
     /** Token budget for injected context. Default: 60000. */
